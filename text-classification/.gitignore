@@ -29,3 +29,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/database.trace.db
+/src/main/resources/reuters-machine-learning/reuters21578.tar.gz
+/src/main/resources/reuters-machine-learning/reuters21578.html
+/src/main/resources/reuters-machine-learning/reuters21578/
