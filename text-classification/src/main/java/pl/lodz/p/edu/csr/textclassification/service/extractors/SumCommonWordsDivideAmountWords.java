@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class SumCommonWordsDivideAmountWords implements Extractor {
 
     @Override
-    public void extract() {
-
+    public Integer extract(String body) {
+        return 0;
     }
 }

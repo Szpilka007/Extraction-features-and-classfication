@@ -7,7 +7,7 @@ public class ProportionUniqueWordsCommonWords implements Extractor {
 
 
     @Override
-    public void extract() {
-
+    public Integer extract(String body) {
+        return 0;
     }
 }
