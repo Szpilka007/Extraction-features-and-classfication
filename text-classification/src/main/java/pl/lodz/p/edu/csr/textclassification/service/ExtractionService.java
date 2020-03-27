@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -19,7 +20,8 @@ public class ExtractionService {
         this.extractorList = Collections.unmodifiableList(extractorList);
     }
 
-    public void extractFeature(/*Obiekt Tekstu do extrakcji */){
-        extractorList.forEach(Extractor::extract);
+    public void extractFeature(String text/*Obiekt Tekstu do extrakcji */){
+        ArrayList<Integer> features = new ArrayList<>();
+        extractorList.forEach(extractor -> features.add(extractor.extract(text)));
     }
 }

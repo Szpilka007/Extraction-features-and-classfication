@@ -7,7 +7,8 @@ public class SumUniqueWordsDivideSentence implements Extractor {
 
 
     @Override
-    public void extract() {
+    public Integer  extract(String body) {
+        return 0;
 
     }
 }
