@@ -10,4 +10,5 @@ public class TextClassificationApplication {
 		SpringApplication.run(TextClassificationApplication.class, args);
 	}
 
+
 }
