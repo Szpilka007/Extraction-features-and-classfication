@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class ReutersService {
 
-    @Autowired
+
     ReutersRepository reutersRepository;
+
+    public ReutersService(ReutersRepository reutersRepository) {
+        this.reutersRepository = reutersRepository;
+    }
 
     List<ReutersEntity> getAllReuters(){
         return reutersRepository.findAll();

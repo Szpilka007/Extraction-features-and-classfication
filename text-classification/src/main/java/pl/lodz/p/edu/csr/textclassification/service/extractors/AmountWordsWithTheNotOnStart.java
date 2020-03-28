@@ -10,9 +10,9 @@ public class AmountWordsWithTheNotOnStart implements Extractor {
 
 
     @Override
-    public Integer extract(String body) {
+    public Double extract(String body,ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
 
-        Integer amountOwnNames = 0;
+        Double amountOwnNames = 0.0;
 
         ArrayList<String> listOfWords = new ArrayList<>(Arrays.asList(body.split(" ")));
 

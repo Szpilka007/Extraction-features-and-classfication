@@ -2,12 +2,18 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @Component
 public class SumUniqueWordsDivideAmountWords implements Extractor {
 
 
     @Override
-    public Integer extract(String body) {
-        return 0;
+    public Double extract(String body, ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
+
+        ArrayList<String> listOfWords = new ArrayList<>(Arrays.asList(body.split(" ")));
+        return (double) (uniqueWords.size() / listOfWords.size());
+
     }
 }

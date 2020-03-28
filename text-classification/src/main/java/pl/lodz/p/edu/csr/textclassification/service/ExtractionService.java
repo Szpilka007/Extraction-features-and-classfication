@@ -20,8 +20,10 @@ public class ExtractionService {
         this.extractorList = Collections.unmodifiableList(extractorList);
     }
 
-    public void extractFeature(String text/*Obiekt Tekstu do extrakcji */){
-        ArrayList<Integer> features = new ArrayList<>();
-        extractorList.forEach(extractor -> features.add(extractor.extract(text)));
+    public void extractFeature(String text/*Obiekt Tekstu do extrakcji */) {
+        ArrayList<Double> features = new ArrayList<>();
+        ArrayList<String> uniqueWords = new ArrayList<>();
+        ArrayList<String> commonWords = new ArrayList<>();
+        extractorList.forEach(extractor -> features.add(extractor.extract(text, uniqueWords, commonWords)));
     }
 }

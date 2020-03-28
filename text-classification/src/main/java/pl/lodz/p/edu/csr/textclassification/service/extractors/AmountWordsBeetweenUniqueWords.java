@@ -2,13 +2,15 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+
 @Component
 public class AmountWordsBeetweenUniqueWords implements Extractor {
 
 
     @Override
-    public Integer extract(String body) {
-        return 0;
+    public Double extract(String body, ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
+        return 0.0;
 
     }
 }
