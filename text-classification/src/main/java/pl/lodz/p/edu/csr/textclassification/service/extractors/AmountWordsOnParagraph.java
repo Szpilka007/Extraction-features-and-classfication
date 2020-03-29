@@ -8,18 +8,14 @@ import java.util.Arrays;
 @Component
 public class AmountWordsOnParagraph implements Extractor {
 
-    private static final String PARAGRAPH_SPLIT_REGEX = "\n\n";
+    private static final String PARAGRAPH_SPLIT_REGEX = "\n +";
 
     @Override
     public Double extract(String body, ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
 
         ArrayList<String> paragraphs = new ArrayList<>(Arrays.asList(body.split(PARAGRAPH_SPLIT_REGEX)));
-        ArrayList<Integer> sumWordsInParagraphs = new ArrayList<>();
+        ArrayList<String> text = new ArrayList<>(Arrays.asList(body.split(" ")));
 
-        paragraphs.forEach(paragraph -> {
-            ArrayList<String> wordsOnParagraph = new ArrayList<>(Arrays.asList(paragraph.split(" ")));
-            sumWordsInParagraphs.add(wordsOnParagraph.size());
-        });
-        return (double) sumWordsInParagraphs.stream().reduce(0, Integer::sum) / sumWordsInParagraphs.size();
+        return (double) text.size() / paragraphs.size();
     }
 }

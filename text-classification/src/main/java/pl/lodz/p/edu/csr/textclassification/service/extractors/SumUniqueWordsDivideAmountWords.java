@@ -13,7 +13,14 @@ public class SumUniqueWordsDivideAmountWords implements Extractor {
     public Double extract(String body, ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
 
         ArrayList<String> listOfWords = new ArrayList<>(Arrays.asList(body.split(" ")));
-        return (double) (uniqueWords.size() / listOfWords.size());
-
+        final int[] uniqueWordAmount = {0};
+        listOfWords.forEach(word -> {
+            uniqueWords.forEach(commonWord ->{
+                if(commonWord.equals(word)){
+                    uniqueWordAmount[0]++;
+                }
+            });
+        });
+        return ((double) uniqueWordAmount[0] / (double)listOfWords.size());
     }
 }

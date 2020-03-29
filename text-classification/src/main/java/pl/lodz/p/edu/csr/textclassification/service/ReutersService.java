@@ -13,6 +13,7 @@ public class ReutersService {
 
     ReutersRepository reutersRepository;
 
+    @Autowired
     public ReutersService(ReutersRepository reutersRepository) {
         this.reutersRepository = reutersRepository;
     }

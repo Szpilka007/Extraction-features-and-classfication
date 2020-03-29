@@ -12,22 +12,22 @@ public class SumUniqueWordsDivideSentence implements Extractor {
     @Override
     public Double extract(String body, ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
 
-        ArrayList<String> sentences = new ArrayList<>(Arrays.asList(body.split(".")));
-        ArrayList<Double> averages = new ArrayList<>();
-        sentences.forEach(sentence -> {
-            int listOfUniqueWordsInText = 0;
-            ArrayList<String> listOfWords = new ArrayList<>(Arrays.asList(sentence.split(" ")));
-            for (String uniqueWord : uniqueWords) {
-                for (String listOfWord : listOfWords) {
-                    if (uniqueWord.equals(listOfWord)) {
-                        listOfUniqueWordsInText++;
-                    }
+        ArrayList<String> sentences = new ArrayList<>(Arrays.asList(body.split(". ")));
+        ArrayList<String> wordsInText = new ArrayList<>(Arrays.asList(body.split(" ")));
+        final int[] uniqueWordsInText = {0};
+
+        wordsInText.forEach(word ->{
+            uniqueWords.forEach(uniqueWord -> {
+                if(word.equals(uniqueWord)){
+                    uniqueWordsInText[0]++;
                 }
-            }
-            averages.add((double) listOfUniqueWordsInText / listOfWords.size());
+            });
         });
 
-        return averages.stream().reduce(0.0, Double::sum) / averages.size();
+        System.out.println(uniqueWordsInText[0]);
+        System.out.println(sentences.size());
+
+        return (double) uniqueWordsInText[0] / sentences.size();
 
     }
 }

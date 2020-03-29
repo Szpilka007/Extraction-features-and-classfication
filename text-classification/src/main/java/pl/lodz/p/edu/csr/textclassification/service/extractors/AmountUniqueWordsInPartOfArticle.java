@@ -1,16 +1,10 @@
 package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-@Controller
+@Component
 public class AmountUniqueWordsInPartOfArticle implements Extractor {
 
     private double percentOfArticle = 0.20;
