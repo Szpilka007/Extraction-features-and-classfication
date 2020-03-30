@@ -1,4 +1,4 @@
-package pl.lodz.p.edu.csr.textclassification.service.extractors;
-
-public class SumCommonWordsDivideSentenceTest {
-}
+//package pl.lodz.p.edu.csr.textclassification.service.extractors;
+//
+//public class SumCommonWordsDivideSentenceTest {
+//}

@@ -7,13 +7,14 @@ class LoadReuters {
 
     @Test
     @Ignore
-// Only manual run! This test load reuters to database!
+        // Only manual run! This test load reuters to database!
     void loadSpecificReuters() {
 
     }
 
     @Test
-    @Ignore// Only manual run! This test load ALL reuters to database!
+    @Ignore
+        // Only manual run! This test load ALL reuters to database!
     void loadAllReuters() {
 
     }
