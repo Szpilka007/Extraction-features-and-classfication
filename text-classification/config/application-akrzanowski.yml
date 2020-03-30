@@ -5,7 +5,7 @@ spring:
   datasource:
     driverClassName: org.h2.Driver
     password: password
-    url: jdbc:h2:file:C:\\Users\\LENOVO\\Desktop\\Studies\\KSR\\computer-systems-of-recognition\\text-classification\\database
+    url: jdbc:h2:file:./src/main/resources/h2/ksr-one
     username: sa
   h2:
     console:

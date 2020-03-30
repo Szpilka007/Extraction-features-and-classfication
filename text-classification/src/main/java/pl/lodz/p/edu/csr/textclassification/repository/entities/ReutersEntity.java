@@ -1,5 +1,6 @@
 package pl.lodz.p.edu.csr.textclassification.repository.entities;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@ApiModel(value = "Reuters Entity Model", description = "Reuters in JPA Entity structure")
 public class ReutersEntity {
     @Id
     @GeneratedValue(generator = "UUID")
