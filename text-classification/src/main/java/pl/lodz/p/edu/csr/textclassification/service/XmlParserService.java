@@ -1,53 +1,37 @@
-package pl.lodz.p.edu.csr.textclassification.service.utils;
+package pl.lodz.p.edu.csr.textclassification.service;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import pl.lodz.p.edu.csr.textclassification.model.ElementType;
-import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
-import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 
-import java.io.*;
-import java.net.URL;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.lodz.p.edu.csr.textclassification.model.enums.ElementType;
+import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
+import pl.lodz.p.edu.csr.textclassification.service.utils.ReutersDateTime;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.TextStyle;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
 @Data
-@Component
-public class XmlParser {
+@Service
+public class XmlParserService {
 
     @Autowired
     public ReutersRepository reutersRepository;
 
-    @Autowired
-    ResourceLoader resourceLoader;
-
-    @Autowired
-    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-
-    DateTimeFormatter dtFormatter = new DateTimeFormatterBuilder().parseCaseInsensitive().
-            appendPattern("d-MMM-yyyy HH:mm:ss.SS").toFormatter();
-//    DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("d-MMM-yyyy HH:mm:ss.SS");
-
-
     public InputStream loadFileFromResources(String path) {
-        InputStream inputStream = getClass().getResourceAsStream(path);
-        return inputStream;
+        return getClass().getResourceAsStream(path);
     }
 
     @Transactional
@@ -101,8 +85,7 @@ public class XmlParser {
         // extract and prepare date reuters
         List<String> dateInText = extractElement(xmlText, ElementType.DATE);
         if (!dateInText.isEmpty()) {
-            // DateTimeFormatter przestał działać i nikt nie wie dlaczego
-            // Domyślnie wrzucony będzie tutaj null
+            date = ReutersDateTime.parse(dateInText.stream().findFirst().get().trim());
         }
 
         // extract and prepare topics reuters
@@ -166,24 +149,12 @@ public class XmlParser {
             body = StringUtils.normalizeSpace(body);
         }
 
-        ReutersEntity reutersEntity = new ReutersEntity();
-
-        reutersEntity.setDate(date);
-        reutersEntity.setTopics(topics);
-        reutersEntity.setPlaces(places);
-        reutersEntity.setPeople(people);
-        reutersEntity.setOrgs(orgs);
-        reutersEntity.setExchanges(exchanges);
-        reutersEntity.setCompanies(companies);
-        reutersEntity.setTitle(title);
-        reutersEntity.setAuthor(author);
-        reutersEntity.setDateline(dateline);
-        reutersEntity.setBody(body);
-
-        // GG: Tutaj pewnie mogłem użyć builder'a ale coś mi się gryzło z encjami
-        // GG: Było późno jak to pisałem, może masz jakiś pomysł?
-
-        return reutersEntity;
+        return ReutersEntity.builder()
+                .date(date).topics(topics).places(places)
+                .people(people).orgs(orgs).exchanges(exchanges)
+                .companies(companies).title(title).author(author)
+                .dateline(dateline).body(body).uuid(UUID.randomUUID())
+                .build();
     }
 
     public List<String> extractElement(String text, ElementType elementType) {

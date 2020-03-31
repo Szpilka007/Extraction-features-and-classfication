@@ -5,7 +5,7 @@ spring:
   datasource:
     driverClassName: org.h2.Driver
     password: password
-    url: jdbc:h2:file:\example\path
+    url: jdbc:h2:file:./src/main/resources/h2/ksr-one
     username: sa
   h2:
     console:

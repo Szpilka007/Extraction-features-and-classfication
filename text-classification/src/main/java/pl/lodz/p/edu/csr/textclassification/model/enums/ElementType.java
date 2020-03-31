@@ -1,4 +1,4 @@
-package pl.lodz.p.edu.csr.textclassification.model;
+package pl.lodz.p.edu.csr.textclassification.model.enums;
 
 import java.util.regex.Pattern;
 

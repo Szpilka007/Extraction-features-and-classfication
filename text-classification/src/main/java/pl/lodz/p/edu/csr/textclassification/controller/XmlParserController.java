@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import pl.lodz.p.edu.csr.textclassification.service.utils.XmlParser;
+import pl.lodz.p.edu.csr.textclassification.service.XmlParserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.List;
 public class XmlParserController {
 
     @Autowired
-    XmlParser xmlParser;
+    XmlParserService xmlParserService;
 
     @PostMapping(value = "/load-single")
     @ResponseBody
@@ -25,7 +25,7 @@ public class XmlParserController {
     @ResponseStatus(HttpStatus.CREATED)
     public String loadXmlReutersToDB(@RequestParam String filePath) {
         try {
-            xmlParser.migrateReutersToDatabase(filePath);
+            xmlParserService.migrateReutersToDatabase(filePath);
         } catch (Exception e) {
             e.printStackTrace();
             return "Loaded to database {" + filePath + "} => FAILED!";
@@ -46,7 +46,7 @@ public class XmlParserController {
         for (int i = 0; i <= 21; i++) {
             String number = String.format("%3s", i).replace(' ', '0');
             try {
-                xmlParser.migrateReutersToDatabase(basePath + prefix + number + extension);
+                xmlParserService.migrateReutersToDatabase(basePath + prefix + number + extension);
             } catch (Exception e) {
                 responseSuccessLoad.add("Loaded to database {" + prefix + number + extension + "} => FAILED!");
                 e.printStackTrace();
@@ -62,7 +62,7 @@ public class XmlParserController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String deleteAllReutersFromDB() {
         try {
-            xmlParser.deleteAllReutersFromDB();
+            xmlParserService.deleteAllReutersFromDB();
         } catch (Exception e) {
             e.printStackTrace();
             return "The operation of clearing the database from reuters failed!";

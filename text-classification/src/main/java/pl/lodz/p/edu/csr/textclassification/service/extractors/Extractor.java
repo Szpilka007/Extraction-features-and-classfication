@@ -9,9 +9,10 @@ import java.util.List;
 public interface Extractor {
 
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
+
     Double extract(String extractionText);
 
-    static List<String> tokenize(String rawArticleText){
+    static List<String> tokenize(String rawArticleText) {
         return Arrays.asList(tokenizer.tokenize(rawArticleText));
     }
 
