@@ -1,7 +1,6 @@
 package pl.lodz.p.edu.csr.textclassification.service.utils;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import pl.lodz.p.edu.csr.textclassification.model.enums.ElementType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.XmlParserService;
@@ -21,7 +20,7 @@ class XmlParserServiceTest {
     void extractTwoElements() {
         String exampleText = "<PLACES><D>usa</D><D>canada</D></PLACES>";
 
-        List<String> expected = Arrays.asList("usa","canada");
+        List<String> expected = Arrays.asList("usa", "canada");
 
         List<String> actual = xmlParserService.extractElement(exampleText, ElementType.SIMPLE);
 

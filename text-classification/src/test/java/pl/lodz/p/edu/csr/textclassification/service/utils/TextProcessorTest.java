@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class TextProcessorTest {
 
@@ -37,7 +37,7 @@ class TextProcessorTest {
                 "least another three years On the London Stock Exchange, Jaguar's shares " +
                 "were last quoted at 591p, down from 611p at yesterday's close, after reporting " +
                 "1986 results which were in line with market expectations, dealers said. " +
-                "REUTER...";
+                "REUTER... test tests tested testing";
 
         assertDoesNotThrow(() -> textProcessor.prepare(rawTextStringBuilder));
 
