@@ -3,7 +3,7 @@ package pl.lodz.p.edu.csr.textclassification.model;
 import lombok.Data;
 
 @Data
-public class FeatureType {
+public class Feature {
 
     private int id;
     private String name;

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class FeatureType {
+public class FeatureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

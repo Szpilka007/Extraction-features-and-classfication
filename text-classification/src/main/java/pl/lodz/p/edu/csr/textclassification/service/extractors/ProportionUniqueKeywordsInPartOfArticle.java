@@ -11,13 +11,13 @@ public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
     private double percentOfArticle = 0.20;
 
     @Override
-    public Double extract(List<String> textToExtract) {
-        int numberOfWordsIncluded = (int) (percentOfArticle * textToExtract.size());
-        Double quantity = Double.valueOf(this.amountOfUniqueWords(textToExtract
+    public Double extract(List<String> keywords) {
+        int numberOfWordsIncluded = (int) (percentOfArticle * keywords.size());
+        Double quantity = Double.valueOf(this.amountOfUniqueWords(keywords
                 .stream()
                 .limit(numberOfWordsIncluded)
                 .collect(Collectors.toList())));
 
-        return quantity / (textToExtract.size() * percentOfArticle);
+        return quantity / (keywords.size() * percentOfArticle);
     }
 }
