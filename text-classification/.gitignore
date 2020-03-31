@@ -33,3 +33,6 @@ build/
 /src/main/resources/reuters-machine-learning/reuters21578.tar.gz
 /src/main/resources/reuters-machine-learning/reuters21578.html
 /src/main/resources/reuters-machine-learning/reuters21578/
+
+### DATABASE H2 ###
+/src/main/resources/h2/*

@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 @Data
 public class TextProcessor {
 
+    public TextProcessor() throws IOException {
+    }
+
     private InputStream inputStreamPOSTagger = getClass().getResourceAsStream("/models/en-pos-maxent.bin");
     private InputStream inputStreamTokenizer = getClass().getResourceAsStream("/models/en-token.bin");
     private InputStream inputStreamLemmatizer = getClass().getResourceAsStream("/models/en-lemmatizer.dict");
@@ -35,19 +38,26 @@ public class TextProcessor {
 
     private List<String> listOfStopWords = IOUtils.readLines(inputStreamStopWords, "UTF-8");
 
-    public TextProcessor() throws IOException {
+    public List<String> tokenize(String text) {
+        return Arrays.asList(tokenizerME.tokenize(text));
     }
 
-    // Tutaj mamy tokenizację, stoplistę, stemizację
-    public List<String> prepare(String text) {
-        String[] tokens = tokenizerME.tokenize(text);
-//        List<String> stemed = Arrays.asList(tokens).
-//        System.out.println(Arrays.toString(tokens));
-//        Arrays.asList(tokens).forEach(a->porterStemmer.stem(a));
-//        System.out.println(Arrays.toString(tokens));
-        return Arrays.stream(tokens)
-                .filter(a -> !listOfStopWords.contains(a))
+    public List<String> stem(List<String> text) {
+        return text.stream()
+                .map(i -> porterStemmer.stem(i))
+                .map(String::toLowerCase)
                 .collect(Collectors.toList());
+    }
+
+    public List<String> useStopWords(List<String> text) {
+        return text.stream()
+                .filter(i -> !listOfStopWords.contains(i) || !listOfStopWords.contains(i.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    // Prepare to extraction
+    public List<String> prepare(String text) {
+        return useStopWords(stem(tokenize(text)));
     }
 
 }
