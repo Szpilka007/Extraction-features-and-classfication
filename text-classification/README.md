@@ -6,13 +6,21 @@ OPIS
 
 ## Ekstrakcja cech
 
-- **()**
+- **(SUKDAW)** SumUniqueKeywordsDivideAmountWords
 
-- **(AOSUKDS)** AvgOfSumUniqueKeywordsDivideSentenceTest
+Suma ilości unikalnych słów kluczowych w całym artykule podzielona przez ilość wszystkich słów w artykule.
+
+- **(AOSUKDS)** AvgOfSumUniqueKeywordsDivideSentence
 
 Segregujemy artykuł na zdania, wyliczamy dla każdego zdania ilość unikalnych słów kluczowych i dzielimy ją przez
 ilość wszystkich słów w tym samym zdaniu. Dla każdego zdania otrzymamy iloczyn, następnie liczymy średnią z 
 wszystkich iloczynów.
+
+- **(AOSCKDS)** AvgOfSumCommonKeywordsDivideSentence
+
+Dla każdego ze zdań liczymy ilość pospolitych słów kluczowych występujących w danym zdaniu,
+następnie dzielimy każdą przez ogólną ilość słów występujących w tym samym zdaniu.
+Ostatecznie liczymy średnią wartość z wcześniej otrzymanych iloczynów.
 
 - **(PUKIPOA)** ProportionUniqueKeywordsInPartOfArticle
 
