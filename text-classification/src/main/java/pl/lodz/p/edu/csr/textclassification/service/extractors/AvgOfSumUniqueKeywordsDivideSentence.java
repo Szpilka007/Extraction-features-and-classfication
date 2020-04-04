@@ -28,7 +28,7 @@ public class AvgOfSumUniqueKeywordsDivideSentence implements Extractor {
         Double avgValue = 0.0;
         for(String sentence : sentences){
             List<String> keywords = textProcessor.prepare(sentence);
-            if(keywords.size() <= 1) continue;
+            if(keywords.size() <= 0) continue;
             avgValue+=(double)amountOfUniqueWords(keywords) / keywords.size();
         }
         return avgValue / sentences.size();

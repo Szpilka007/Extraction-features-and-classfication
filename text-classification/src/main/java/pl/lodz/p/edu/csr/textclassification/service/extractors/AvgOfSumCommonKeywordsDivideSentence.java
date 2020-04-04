@@ -12,6 +12,8 @@ import java.util.List;
 @Component
 public class AvgOfSumCommonKeywordsDivideSentence implements Extractor {
 
+    private static final String SENTENCE_SPLIT_REGEX = "\\. ";
+
     TextProcessor textProcessor;
 
     @Autowired
@@ -22,11 +24,11 @@ public class AvgOfSumCommonKeywordsDivideSentence implements Extractor {
     @Override
     public Double extract(ReutersEntity reuters) {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
-        List<String> sentences = Arrays.asList(fullText.split("\\. "));
+        List<String> sentences = Arrays.asList(fullText.split(SENTENCE_SPLIT_REGEX));
         double avgValue = 0.0;
         for(String sentence : sentences){
             List<String> keywords = textProcessor.prepare(sentence);
-            if(keywords.size() <= 1) continue;
+            if(keywords.size() <= 0) continue;
             avgValue+=(double)amountOfCommonWords(keywords) / keywords.size();
         }
         return avgValue / sentences.size();

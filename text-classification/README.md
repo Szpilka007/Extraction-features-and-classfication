@@ -17,7 +17,7 @@ Suma ilości pospolitych słów kluczowych w całym artykule podzielona przez il
 - **(AOSUKDS)** AvgOfSumUniqueKeywordsDivideSentence
 
 Segregujemy artykuł na zdania, wyliczamy dla każdego zdania ilość unikalnych słów kluczowych i dzielimy ją przez
-ilość wszystkich słów w tym samym zdaniu. Dla każdego zdania otrzymamy iloczyn, następnie liczymy średnią z 
+ilość wszystkich słów kluczowych w tym samym zdaniu. Dla każdego zdania otrzymamy iloczyn, następnie liczymy średnią z 
 wszystkich iloczynów.
 
 - **(AOSCKDS)** AvgOfSumCommonKeywordsDivideSentence
@@ -25,6 +25,12 @@ wszystkich iloczynów.
 Dla każdego ze zdań liczymy ilość pospolitych słów kluczowych występujących w danym zdaniu,
 następnie dzielimy każdą przez ogólną ilość słów występujących w tym samym zdaniu.
 Ostatecznie liczymy średnią wartość z wcześniej otrzymanych iloczynów.
+
+- **(AOSUKDP)** AvgOfSumUniqueKeywordsDivideParagraph
+
+Dla każdego z akapitów liczymy ilość unikalnych słów kluczowych występujących w danym akapicie,
+następnie dzielimy każdą przez ogólną ilość słów kluczowy występujących w tym samym akapicie.
+Na koniec wyliczamy średnią wartość z wcześniej otrzymanych iloczynów.
 
 - **(PUACK)** ProportionUniqueAndCommonKeywords
 
