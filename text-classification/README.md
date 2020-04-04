@@ -29,7 +29,13 @@ Ostatecznie liczymy średnią wartość z wcześniej otrzymanych iloczynów.
 - **(AOSUKDP)** AvgOfSumUniqueKeywordsDivideParagraph
 
 Dla każdego z akapitów liczymy ilość unikalnych słów kluczowych występujących w danym akapicie,
-następnie dzielimy każdą przez ogólną ilość słów kluczowy występujących w tym samym akapicie.
+następnie dzielimy każdą z liczb przez ogólną ilość słów kluczowy występujących w tym samym akapicie.
+Na koniec wyliczamy średnią wartość z wcześniej otrzymanych iloczynów.
+
+- **(AOSCKDP)** AvgOfSumCommonKeywordsDivideParagraph
+
+Dla każdego z akapitów liczymy ilość pospolitych słów kluczowych występujących w danym akapicie,
+następnie dzielimy każdą z liczb przez ogólną ilość słów kluczowy występujących w tym samym akapicie.
 Na koniec wyliczamy średnią wartość z wcześniej otrzymanych iloczynów.
 
 - **(PUACK)** ProportionUniqueAndCommonKeywords
