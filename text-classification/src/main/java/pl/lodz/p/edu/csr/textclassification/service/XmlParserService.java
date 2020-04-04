@@ -146,7 +146,7 @@ public class XmlParserService {
         List<String> bodyInText = extractElement(xmlText, ElementType.BODY);
         if (!bodyInText.isEmpty()) {
             body = bodyInText.stream().findFirst().get().trim();
-            body = StringUtils.normalizeSpace(body);
+//            body = StringUtils.normalizeSpace(body);  // off-paragraphs not working
         }
 
         return ReutersEntity.builder()
