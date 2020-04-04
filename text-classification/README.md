@@ -47,3 +47,7 @@ Proporcja ilości unikalnych słów kluczowych do pospolitych słów kluczowych 
 Z artykułu wyciągamy pewien procent słów (20%),
 liczymy proporcję ilości unikalnych słów kluczowych występujących w danej części tekstu i
 ilości wszystkich słów w danej części tekstu.
+
+- **(AKOP)** AmountKeywordsOnParagraph
+
+Liczymy ilość słów kluczowych w każdym z akapitów i wyciągamy z tego średnią.
