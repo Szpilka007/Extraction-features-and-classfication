@@ -1,31 +1,35 @@
-//package pl.lodz.p.edu.csr.textclassification.service.extractors;
-//
-//import org.springframework.stereotype.Component;
-//
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//
-//@Component
-//public class SumCommonWordsDivideSentence implements Extractor {
-//
-//
-//    @Override
-//    public Double extract(String body, ArrayList<String> uniqueWords, ArrayList<String> commonWords) {
-//
-//        ArrayList<String> sentences = new ArrayList<>(Arrays.asList(body.split(".")));
-//        ArrayList<String> wordsInText = new ArrayList<>(Arrays.asList(body.split(" ")));
-//        final int[] commonWordsInText = {0};
-//
-//        wordsInText.forEach(word ->{
-//            commonWords.forEach(commonWord -> {
-//                if(word.equals(commonWord)){
-//                    commonWordsInText[0]++;
-//                }
-//            });
-//        });
-//
-//        return (double) commonWordsInText[0] / sentences.size();
-//
-//
-//    }
-//}
+package pl.lodz.p.edu.csr.textclassification.service.extractors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
+import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
+
+import java.util.Arrays;
+import java.util.List;
+
+@Component
+public class AvgOfSumCommonKeywordsDivideSentence implements Extractor {
+
+    TextProcessor textProcessor;
+
+    @Autowired
+    AvgOfSumCommonKeywordsDivideSentence(TextProcessor textProcessor) {
+        this.textProcessor = textProcessor;
+    }
+
+    @Override
+    public Double extract(ReutersEntity reuters) {
+        String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
+        List<String> sentences = Arrays.asList(fullText.split("\\. "));
+        double avgValue = 0.0;
+        for(String sentence : sentences){
+            List<String> keywords = textProcessor.prepare(sentence);
+            if(keywords.size() <= 1) continue;
+            avgValue+=(double)amountOfCommonWords(keywords) / keywords.size();
+        }
+        return avgValue / sentences.size();
+    }
+
+}
