@@ -17,7 +17,7 @@ public class SumUniqueKeywordsDivideAmountWordsTest {
     }
 
     @Test
-    public void extractScore() {
+    public void extract() {
         ReutersEntity reutersEntity = ReutersEntity.builder().body(text).build();
         Double actual = sukdaw.extract(reutersEntity);
         // 3 unique words, 10 words

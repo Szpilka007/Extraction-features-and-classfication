@@ -26,6 +26,10 @@ Dla każdego ze zdań liczymy ilość pospolitych słów kluczowych występując
 następnie dzielimy każdą przez ogólną ilość słów występujących w tym samym zdaniu.
 Ostatecznie liczymy średnią wartość z wcześniej otrzymanych iloczynów.
 
+- **(PUACK)** ProportionUniqueAndCommonKeywords
+
+Proporcja ilości unikalnych słów kluczowych do pospolitych słów kluczowych w tekście.
+
 - **(PUKIPOA)** ProportionUniqueKeywordsInPartOfArticle
 
 Z artykułu wyciągamy pewien procent słów (20%),
