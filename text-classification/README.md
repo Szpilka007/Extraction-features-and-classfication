@@ -10,6 +10,10 @@ OPIS
 
 Suma ilości unikalnych słów kluczowych w całym artykule podzielona przez ilość wszystkich słów w artykule.
 
+- **(SCKDAW)** SumCommonKeywordsDivideAmountWords
+
+Suma ilości pospolitych słów kluczowych w całym artykule podzielona przez ilość wszystkich słów w artykule.
+
 - **(AOSUKDS)** AvgOfSumUniqueKeywordsDivideSentence
 
 Segregujemy artykuł na zdania, wyliczamy dla każdego zdania ilość unikalnych słów kluczowych i dzielimy ją przez

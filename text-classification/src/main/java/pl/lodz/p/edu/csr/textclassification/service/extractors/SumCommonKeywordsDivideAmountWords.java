@@ -9,12 +9,12 @@ import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 import java.util.List;
 
 @Component
-public class SumUniqueKeywordsDivideAmountWords implements Extractor {
+public class SumCommonKeywordsDivideAmountWords implements Extractor {
 
     TextProcessor textProcessor;
 
     @Autowired
-    SumUniqueKeywordsDivideAmountWords(TextProcessor textProcessor) {
+    SumCommonKeywordsDivideAmountWords(TextProcessor textProcessor) {
         this.textProcessor = textProcessor;
     }
 
@@ -23,7 +23,7 @@ public class SumUniqueKeywordsDivideAmountWords implements Extractor {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> keywords = textProcessor.prepare(fullText);
         int amountOfWords = fullText.trim().split(" ").length;
-        return (double) amountOfUniqueWords(keywords) / amountOfWords;
+        return (double) amountOfCommonWords(keywords) / amountOfWords;
     }
 
 }

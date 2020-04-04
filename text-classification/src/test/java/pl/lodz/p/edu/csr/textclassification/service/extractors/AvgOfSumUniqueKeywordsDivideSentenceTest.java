@@ -17,7 +17,7 @@ public class AvgOfSumUniqueKeywordsDivideSentenceTest {
     }
 
     @Test
-    public void extractScore() {
+    public void extract() {
         ReutersEntity reutersEntity = ReutersEntity.builder().body(text).build();
         Double actual = aosukds.extract(reutersEntity);
         // 1 -> 2 unique / 6 words

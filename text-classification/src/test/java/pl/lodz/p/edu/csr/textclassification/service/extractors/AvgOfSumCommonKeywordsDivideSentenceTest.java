@@ -17,11 +17,11 @@ public class AvgOfSumCommonKeywordsDivideSentenceTest {
     }
 
     @Test
-    public void extractScore() {
+    public void extract() {
         ReutersEntity reutersEntity = ReutersEntity.builder().body(text).build();
         Double actual = aosckds.extract(reutersEntity);
         // 1 -> 2 common (cat, sun) / 6 words
-        // 2 -> 1 unique (dance, break) / 3 words
+        // 2 -> 2 common (dance, break) / 3 words
         // 3 -> canceled
         double firstSentence = (double) 2 / 6;
         double secondSentence = (double) 2 / 3;
