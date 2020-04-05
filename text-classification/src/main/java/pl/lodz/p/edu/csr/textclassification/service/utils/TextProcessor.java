@@ -59,7 +59,17 @@ public class TextProcessor {
 
     // Prepare to extraction
     public List<String> prepare(String text) {
-        return useStopWords(stem(tokenize(text)));
+        return Arrays.asList(tokenizerME.tokenize(text)).stream()
+                .map(i -> porterStemmer.stem(i)).map(String::toLowerCase)
+                .filter(i -> !listOfStopWords.contains(i))
+                .collect(Collectors.toList());
+    }
+
+    public List<String> prepareWithoutThe(String text){
+        return Arrays.asList(tokenizerME.tokenize(text)).stream()
+                .map(i -> porterStemmer.stem(i)).map(String::toLowerCase)
+                .filter(i -> !listOfStopWords.contains(i) || i.equals("the") || i.equals("."))
+                .collect(Collectors.toList());
     }
 
 }

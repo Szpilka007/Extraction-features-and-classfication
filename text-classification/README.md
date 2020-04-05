@@ -51,3 +51,7 @@ ilości wszystkich słów w danej części tekstu.
 - **(AKOP)** AmountKeywordsOnParagraph
 
 Liczymy ilość słów kluczowych w każdym z akapitów i wyciągamy z tego średnią.
+
+- **(AWWTNOSDAK)** AmountWordsWithTheNotOnStartDivideAmountKeywords
+
+Liczymy ilość słów kluczowych z przedimkiem "THE" i dzielimy przez ilość słów kluczowych
