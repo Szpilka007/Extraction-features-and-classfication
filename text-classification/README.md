@@ -54,4 +54,22 @@ Liczymy ilość słów kluczowych w każdym z akapitów i wyciągamy z tego śre
 
 - **(AWWTNOSDAK)** AmountWordsWithTheNotOnStartDivideAmountKeywords
 
-Liczymy ilość słów kluczowych z przedimkiem "THE" i dzielimy przez ilość słów kluczowych
+Liczymy ilość unikalnych słów kluczowych z przedimkiem "THE" i dzielimy przez ilość słów kluczowych
+
+- **(AL)** AverageLevenshtein
+
+Liczymy odległość Lewensztajna dla każdego unikalnego słowa kluczowego w artykule względem
+innych słów niekluczowych (zbiór ten nie będzie zawierać duplikatów). Z uzyskanych odległości wyliczamy
+średnią.
+
+
+- **(AWBUK)** AmountWordsBetweenUniqueKeywords
+
+Wyszukujemy słowa kluczowe w całym tekście, następnie dla każdego ze słów wyliczamy
+ilość słów kluczowych pomiędzy resztą słów kluczowych.
+Mając w tekście zbiór słów kluczowych {A, B, C, D, E, F, G},
+którego podzbiór unikalnych słów kluczowych to {B, D, F} wyliczamy kolejno
+ilości słów kluczowych pomiędzy każdą kombinacją słów unikalnych.
+Z wszystkich kombinacji dla danego unikalnego słowa kluczowego wyciągamy średnią,
+następnie z wszystkich średnich dla każdego z unikalnych słów kluczowych
+również wyciągamy średnią - jest to ostateczna wartość cechy.
