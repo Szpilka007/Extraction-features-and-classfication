@@ -2,6 +2,8 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -21,7 +23,7 @@ public class AmountKeywordsOnParagraph implements Extractor {
     }
 
     @Override
-    public Double extract(ReutersEntity reuters) {
+    public FeatureEntity extract(ReutersEntity reuters) {
         List<String> paragraphs = Arrays.asList(reuters.getBody().split(PARAGRAPH_SPLIT_REGEX));
         int amountOfParagraphs = paragraphs.size();
         double avgValue = 0.0;
@@ -33,6 +35,7 @@ public class AmountKeywordsOnParagraph implements Extractor {
             }
             avgValue += keywords.size();
         }
-        return avgValue / amountOfParagraphs;
+
+        return FeatureEntity.builder().value(avgValue / amountOfParagraphs).featureType(FeatureType.AKOP).build();
     }
 }
