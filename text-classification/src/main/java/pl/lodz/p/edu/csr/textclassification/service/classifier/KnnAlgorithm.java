@@ -7,7 +7,6 @@ import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.Metric;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
