@@ -1,11 +1,8 @@
 package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import opennlp.tools.tokenize.SimpleTokenizer;
-import org.springframework.beans.factory.annotation.Autowired;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
-import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
