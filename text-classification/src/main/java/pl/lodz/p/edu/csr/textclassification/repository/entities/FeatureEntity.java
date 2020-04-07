@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.UUID;
 
 @Data
@@ -15,8 +16,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="FEATURES")
-public class FeatureEntity {
+@Table(name = "FEATURES")
+public class FeatureEntity implements Serializable {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -24,14 +25,14 @@ public class FeatureEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "uuid", updatable = false, nullable = false)
     private UUID uuid;
 
-    @OneToOne
-    @JoinColumn(name = "reuters_id", nullable = false)
-    private ReutersEntity reuters;
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private FeatureType featureType;
+
+    @Column
     private Double value;
 
 }

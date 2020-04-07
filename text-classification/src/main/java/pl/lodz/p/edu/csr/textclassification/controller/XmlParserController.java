@@ -1,5 +1,6 @@
 package pl.lodz.p.edu.csr.textclassification.controller;
 
+import com.jcabi.aspects.Loggable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ public class XmlParserController {
     @ResponseBody
     @ApiOperation(value = "Load single reuters from resources by related file path.")
     @ResponseStatus(HttpStatus.CREATED)
+    @Loggable(Loggable.TRACE)
     public String loadXmlReutersToDB(@RequestParam String filePath) {
         try {
             xmlParserService.migrateReutersToDatabase(filePath);
@@ -37,6 +39,7 @@ public class XmlParserController {
     @ResponseBody
     @ApiOperation(value = "Load all reuters from resources.")
     @ResponseStatus(HttpStatus.CREATED)
+    @Loggable(Loggable.TRACE)
     public List<String> loadDirXmlReutersToDB() {
         String basePath = "/reuters-machine-learning/reuters21578/";
         String prefix = "reut2-";
@@ -60,6 +63,7 @@ public class XmlParserController {
     @ResponseBody
     @ApiOperation(value = "Remove all reuters from database (be careful).")
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @Loggable(Loggable.TRACE)
     public String deleteAllReutersFromDB() {
         try {
             xmlParserService.deleteAllReutersFromDB();

@@ -12,9 +12,9 @@ import java.util.regex.Pattern;
 @Data
 public class ReutersDateTime {
 
-    private LocalDateTime localDateTime;
     private static Pattern patternDateReuters = Pattern.compile(
             "([0-9]+)-(.*?)-([0-9]{4}) ([0-9]{2}):([0-9]{2}):([0-9]{2}).([0-9]{2})");
+    private LocalDateTime localDateTime;
 
     public static LocalDateTime parse(String text) {
         LocalDateTime parsed = null;
