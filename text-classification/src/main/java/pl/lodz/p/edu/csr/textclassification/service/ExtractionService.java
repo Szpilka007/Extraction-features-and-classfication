@@ -12,6 +12,8 @@ import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,8 +54,7 @@ public class ExtractionService {
 
     @Transactional()
     public String extractFeature(UUID reuters_uuid) {
-        StopWatch timer = new StopWatch(reuters_uuid.toString());
-        timer.start();
+        LocalDateTime now = LocalDateTime.now();
         ReutersEntity reuters = reutersRepository.findReutersEntityByUuid(reuters_uuid);
         reuters.getFeatures().clear();
         for (Extractor extractor : extractorList) {
@@ -65,31 +66,24 @@ public class ExtractionService {
             featuresRepository.save(fe);
         }
         reutersRepository.save(reuters);
-        timer.stop();
-        return timer.getId() + " | " + timer.getTotalTimeSeconds() + "seconds.";
+        return reuters_uuid.toString() + " | " + now.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " seconds.";
     }
 
     @Transactional
     public String extractAllFeatures() {
-        StopWatch timer = new StopWatch("Extractor_Timer");
-        timer.start();
+        LocalDateTime now = LocalDateTime.now();
         List<UUID> allReutersUUID = reutersRepository.getAllReutersUUID();
-//        for(UUID uuid : allReutersUUID){
-//            System.out.println(uuid.toString());
-//        }
         System.out.println("Extraction of article features for the entire database began.");
         System.out.println("This may take a while ...");
         for (int i = 0; i < allReutersUUID.size(); i++) {
-            System.out.println(allReutersUUID.get(i));
-//            if((i/allReutersUUID.size()) % 5 == 0){
-//                System.out.println("=============================================================");
-//                System.out.println("Extraction progress: "+(i/allReutersUUID.size())+" %");
-//                System.out.println("=============================================================");
-//            }
-            System.out.println(extractFeature(UUID.fromString(allReutersUUID.get(i).toString())) + " | " + i + "/" + allReutersUUID.size());
+            if(i%1000 == 0){
+                System.out.println(now.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " sec | " + ((double)(i/allReutersUUID.size())));
+            } else {
+                extractFeature(UUID.fromString(allReutersUUID.get(i).toString()));
+            }
         }
-        timer.stop();
-        return "The extraction of the features was successful! It lasted " + timer.getTotalTimeSeconds() + " seconds!";
+        return "The extraction of the features was successful! It lasted " +
+                now.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " seconds!";
     }
 
     public String prepareDatabase() {

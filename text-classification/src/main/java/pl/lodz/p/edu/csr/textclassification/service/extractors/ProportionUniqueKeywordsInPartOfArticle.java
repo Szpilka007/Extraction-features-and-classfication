@@ -30,7 +30,6 @@ public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
                 .stream()
                 .limit(numberOfWordsIncluded)
                 .collect(Collectors.toList())));
-        System.out.println(quantity.toString() + " " + keywords.size() + " " + percentOfArticle);
         return quantity / (keywords.size() * percentOfArticle);
     }
 

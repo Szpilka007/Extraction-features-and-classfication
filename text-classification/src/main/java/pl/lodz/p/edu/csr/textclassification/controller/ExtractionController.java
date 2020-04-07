@@ -46,7 +46,7 @@ public class ExtractionController {
     @Loggable(Loggable.TRACE)
     public String getAndSaveOneReutersFeatures(@PathVariable String uuid) {
         StringBuilder result = new StringBuilder();
-        result.append(extractionService.extractFeature(UUID.fromString(uuid)));
+        result.append(extractionService.extractFeature(UUID.fromString(uuid))+"\n");
         List<FeatureEntity> features = extractionService.getReutersRepository()
                 .findReutersEntityByUuid(UUID.fromString(uuid))
                 .getFeatures();
