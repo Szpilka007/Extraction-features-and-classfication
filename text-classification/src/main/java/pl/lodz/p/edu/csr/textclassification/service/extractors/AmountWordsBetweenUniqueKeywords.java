@@ -2,6 +2,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -35,5 +36,10 @@ public class AmountWordsBetweenUniqueKeywords implements Extractor {
         lengths.remove(0);
 
         return (double) lengths.stream().reduce((Integer::sum)).get() / (double) lengths.size();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AWBUK;
     }
 }
