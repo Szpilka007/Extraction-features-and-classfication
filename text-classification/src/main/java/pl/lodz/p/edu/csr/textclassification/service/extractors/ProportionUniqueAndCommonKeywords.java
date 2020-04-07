@@ -3,6 +3,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Component
 public class ProportionUniqueAndCommonKeywords implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     ProportionUniqueAndCommonKeywords(TextProcessor textProcessor) {
@@ -27,5 +28,10 @@ public class ProportionUniqueAndCommonKeywords implements Extractor {
         } else {
             return (double) getOnlyUniqueWords(keywords).size() / getOnlyCommonWords(keywords).size();
         }
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.PUACK;
     }
 }

@@ -2,6 +2,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -13,7 +14,7 @@ public class AvgOfSumCommonKeywordsDivideParagraph implements Extractor {
 
     private static final String PARAGRAPH_SPLIT_REGEX = "     ";
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AvgOfSumCommonKeywordsDivideParagraph(TextProcessor textProcessor) {
@@ -30,6 +31,11 @@ public class AvgOfSumCommonKeywordsDivideParagraph implements Extractor {
             avgValue += (double) amountOfCommonWords(keywords) / keywords.size();
         }
         return avgValue / paragraphs.size();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AOSCKDP;
     }
 
 }
