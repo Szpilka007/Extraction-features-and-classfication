@@ -45,10 +45,10 @@ public class KnnAlgorithm {
 
         //POROWNUJEMY OBIEKTY Z ZBIORU UCZACEGO POKOLEI Z KAZDYMI CECHAMI Z ZBIORU TESTOWEGO
         learningReutersEntityFeaturesMap.forEach(((reutersEntity, features) -> {
-            ArrayList<Double> metricScoresForFeautres = new ArrayList<>();
+            Map<ReutersEntity, Double> metricScoresForFeautres = new HashMap<>();
             trainingReutersEntityFeaturesMap.forEach((testReutersEntity, testFeatures) -> {
                 try {
-                    metricScoresForFeautres.add(metric.calculate(features, testFeatures));
+                    metricScoresForFeautres.put(testReutersEntity,metric.calculate(features, testFeatures));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -56,13 +56,20 @@ public class KnnAlgorithm {
 
             //ODRZUCAMY TE METRYKI KTORE NIE SPELNIAJA WARTOSCI
             //I OTRZYMUJEMY METRYKE KTROA NAJCZESCNIEJ SIE POWTARZA
-            Double filteredMetrics = metricScoresForFeautres
+            Double filteredMetrics = metricScoresForFeautres.values()
                     .stream()
                     .filter(score -> score < k)
                     .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
                     .entrySet().stream().max((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
                     .map(Map.Entry::getKey).orElse(null);
 
+
+            Map<ReutersEntity,List<String>> processedReuters = new HashMap<>();
+            metricScoresForFeautres.forEach((testObject, value) -> {
+                if(value.equals(filteredMetrics)){
+                    processedReuters.put(reutersEntity, testObject.getPlaces());
+                }
+            });
 
         }));
 
