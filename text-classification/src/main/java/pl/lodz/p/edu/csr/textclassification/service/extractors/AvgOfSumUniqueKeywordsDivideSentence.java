@@ -14,30 +14,33 @@ import java.util.List;
 @Component
 public class AvgOfSumUniqueKeywordsDivideSentence implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AvgOfSumUniqueKeywordsDivideSentence(TextProcessor textProcessor) {
         this.textProcessor = textProcessor;
     }
 
-    // ile średnio na zdanie przypada w artykule słów kluczowych
-
     @Override
     public FeatureEntity extract(ReutersEntity reuters) {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> sentences = Arrays.asList(fullText.split("\\. "));
         Double avgValue = 0.0;
-        for(String sentence : sentences){
+        for (String sentence : sentences) {
             List<String> keywords = textProcessor.prepare(sentence);
-            if(keywords.size() <= 0) continue;
-            avgValue+=(double)amountOfUniqueWords(keywords) / keywords.size();
+            if (keywords.size() <= 0) continue;
+            avgValue += (double) amountOfUniqueWords(keywords) / keywords.size();
         }
         return FeatureEntity
                 .builder()
                 .value(avgValue / sentences.size())
                 .featureType(FeatureType.AOSCKDS)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AOSUKDS;
     }
 
 }

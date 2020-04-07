@@ -14,14 +14,13 @@ import java.util.stream.Collectors;
 @Component
 public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
 
-    TextProcessor textProcessor;
+    private final double percentOfArticle = 0.20;
+    private TextProcessor textProcessor;
 
     @Autowired
-    ProportionUniqueKeywordsInPartOfArticle(TextProcessor textProcessor){
+    ProportionUniqueKeywordsInPartOfArticle(TextProcessor textProcessor) {
         this.textProcessor = textProcessor;
     }
-
-    private double percentOfArticle = 0.20;
 
     @Override
     public FeatureEntity extract(ReutersEntity reuters) {
@@ -38,5 +37,10 @@ public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
                 .value(quantity / (keywords.size() * percentOfArticle))
                 .featureType(FeatureType.PUKIPOA)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.PUKIPOA;
     }
 }

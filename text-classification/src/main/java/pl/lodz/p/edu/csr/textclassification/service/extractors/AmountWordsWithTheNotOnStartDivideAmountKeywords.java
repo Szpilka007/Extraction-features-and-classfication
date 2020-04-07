@@ -8,8 +8,6 @@ import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,7 +15,7 @@ import java.util.stream.IntStream;
 @Component
 public class AmountWordsWithTheNotOnStartDivideAmountKeywords implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AmountWordsWithTheNotOnStartDivideAmountKeywords(TextProcessor textProcessor) {
@@ -32,8 +30,8 @@ public class AmountWordsWithTheNotOnStartDivideAmountKeywords implements Extract
         List<Integer> allIndexes = IntStream.range(0, keywords.size())
                 .boxed()
                 .skip(2)
-                .filter(i -> keywords.get(i-1).toLowerCase().equals("the"))
-                .filter(i -> !keywords.get(i-2).equals("."))
+                .filter(i -> keywords.get(i - 1).toLowerCase().equals("the"))
+                .filter(i -> !keywords.get(i - 2).equals("."))
                 .collect(Collectors.toList()); // get indexes for words with prefix the
         List<String> wordWithPrefixThe = allIndexes.stream().map(keywords::get).collect(Collectors.toList());
         List<String> wordsWithPrefixTheAfterStoplist = textProcessor.useStopWords(wordWithPrefixThe);
@@ -42,6 +40,11 @@ public class AmountWordsWithTheNotOnStartDivideAmountKeywords implements Extract
                 .value((double) wordsWithPrefixTheAfterStoplist.size() / keywordsWithStopList.size())
                 .featureType(FeatureType.AWWTNOSDAK)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AWWTNOSDAK;
     }
 
 }

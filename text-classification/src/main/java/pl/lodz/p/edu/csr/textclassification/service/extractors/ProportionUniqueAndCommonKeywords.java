@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class ProportionUniqueAndCommonKeywords implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     ProportionUniqueAndCommonKeywords(TextProcessor textProcessor) {
@@ -37,5 +37,10 @@ public class ProportionUniqueAndCommonKeywords implements Extractor {
                     .featureType(FeatureType.PUACK)
                     .build();
         }
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.PUACK;
     }
 }

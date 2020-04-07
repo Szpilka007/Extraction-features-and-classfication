@@ -20,25 +20,20 @@ import java.util.stream.Collectors;
 @Component
 public class TextProcessor {
 
-    public TextProcessor() throws IOException {
-    }
-
     private InputStream inputStreamPOSTagger = getClass().getResourceAsStream("/models/en-pos-maxent.bin");
     private InputStream inputStreamTokenizer = getClass().getResourceAsStream("/models/en-token.bin");
     private InputStream inputStreamLemmatizer = getClass().getResourceAsStream("/models/en-lemmatizer.dict");
     private InputStream inputStreamStopWords = getClass().getResourceAsStream("/models/stopwords_en.txt");
-
     private TokenizerModel tokenizerModel = new TokenizerModel(inputStreamTokenizer);
     private TokenizerME tokenizerME = new TokenizerME(tokenizerModel);
-
     private POSModel posModel = new POSModel(inputStreamPOSTagger);
     private POSTaggerME posTaggerME = new POSTaggerME(posModel);
-
     private DictionaryLemmatizer lemmatizer = new DictionaryLemmatizer(inputStreamLemmatizer);
-
     private PorterStemmer porterStemmer = new PorterStemmer();
-
     private List<String> listOfStopWords = IOUtils.readLines(inputStreamStopWords, "UTF-8");
+
+    public TextProcessor() throws IOException {
+    }
 
     public List<String> tokenize(String text) {
         return Arrays.asList(tokenizerME.tokenize(text));
@@ -65,7 +60,7 @@ public class TextProcessor {
                 .collect(Collectors.toList());
     }
 
-    public List<String> prepareWithoutThe(String text){
+    public List<String> prepareWithoutThe(String text) {
         return Arrays.asList(tokenizerME.tokenize(text)).stream()
                 .map(i -> porterStemmer.stem(i)).map(String::toLowerCase)
                 .filter(i -> !listOfStopWords.contains(i) || i.equals("the") || i.equals("."))

@@ -16,7 +16,7 @@ public class AvgOfSumCommonKeywordsDivideParagraph implements Extractor {
 
     private static final String PARAGRAPH_SPLIT_REGEX = "     ";
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AvgOfSumCommonKeywordsDivideParagraph(TextProcessor textProcessor) {
@@ -37,6 +37,11 @@ public class AvgOfSumCommonKeywordsDivideParagraph implements Extractor {
                 .value(avgValue / paragraphs.size())
                 .featureType(FeatureType.AOSCKDP)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AOSCKDP;
     }
 
 }

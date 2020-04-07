@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class SumCommonKeywordsDivideAmountWords implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     SumCommonKeywordsDivideAmountWords(TextProcessor textProcessor) {
@@ -31,6 +31,11 @@ public class SumCommonKeywordsDivideAmountWords implements Extractor {
                 .value((double) amountOfCommonWords(keywords) / amountOfWords)
                 .featureType(FeatureType.SCKDAW)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.SCKDAW;
     }
 
 }

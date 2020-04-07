@@ -15,7 +15,7 @@ public class AvgOfSumUniqueKeywordsDivideParagraph implements Extractor {
 
     private static final String PARAGRAPH_SPLIT_REGEX = "     ";
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AvgOfSumUniqueKeywordsDivideParagraph(TextProcessor textProcessor) {
@@ -36,6 +36,11 @@ public class AvgOfSumUniqueKeywordsDivideParagraph implements Extractor {
                 .value(avgValue / paragraphs.size())
                 .featureType(FeatureType.AOSUKDP)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AOSUKDP;
     }
 
 }

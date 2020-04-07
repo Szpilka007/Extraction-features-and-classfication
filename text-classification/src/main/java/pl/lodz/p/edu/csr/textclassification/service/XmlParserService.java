@@ -1,10 +1,8 @@
 package pl.lodz.p.edu.csr.textclassification.service;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.edu.csr.textclassification.model.enums.ElementType;
@@ -20,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 
 @Data
@@ -153,7 +150,8 @@ public class XmlParserService {
                 .date(date).topics(topics).places(places)
                 .people(people).orgs(orgs).exchanges(exchanges)
                 .companies(companies).title(title).author(author)
-                .dateline(dateline).body(body).uuid(UUID.randomUUID())
+                .dateline(dateline).body(body)
+                .features(new ArrayList<>())
                 .build();
     }
 

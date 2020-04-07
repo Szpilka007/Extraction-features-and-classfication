@@ -1,6 +1,7 @@
 package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import opennlp.tools.tokenize.SimpleTokenizer;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 
@@ -46,8 +47,9 @@ public interface Extractor {
                 .count());
     }
 
-    default Integer amountOfWords(String text){
+    default Integer amountOfWords(String text) {
         return text.split(" ").length;
     }
 
+    FeatureType getFeatureTypeExtractor();
 }

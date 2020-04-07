@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -15,7 +16,7 @@ public class AmountKeywordsOnParagraph implements Extractor {
 
     private static final String PARAGRAPH_SPLIT_REGEX = "     ";
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AmountKeywordsOnParagraph(TextProcessor textProcessor) {
@@ -29,7 +30,7 @@ public class AmountKeywordsOnParagraph implements Extractor {
         double avgValue = 0.0;
         for (String paragraph : paragraphs) {
             List<String> keywords = textProcessor.prepare(paragraph);
-            if (keywords.size() <= 0){
+            if (keywords.size() <= 0) {
                 amountOfParagraphs--;
                 continue;
             }
@@ -37,5 +38,10 @@ public class AmountKeywordsOnParagraph implements Extractor {
         }
 
         return FeatureEntity.builder().value(avgValue / amountOfParagraphs).featureType(FeatureType.AKOP).build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AKOP;
     }
 }

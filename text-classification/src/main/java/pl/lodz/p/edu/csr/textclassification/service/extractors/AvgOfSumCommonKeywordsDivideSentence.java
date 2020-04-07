@@ -16,7 +16,7 @@ public class AvgOfSumCommonKeywordsDivideSentence implements Extractor {
 
     private static final String SENTENCE_SPLIT_REGEX = "\\. ";
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     AvgOfSumCommonKeywordsDivideSentence(TextProcessor textProcessor) {
@@ -28,15 +28,20 @@ public class AvgOfSumCommonKeywordsDivideSentence implements Extractor {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> sentences = Arrays.asList(fullText.split(SENTENCE_SPLIT_REGEX));
         double avgValue = 0.0;
-        for(String sentence : sentences){
+        for (String sentence : sentences) {
             List<String> keywords = textProcessor.prepare(sentence);
-            if(keywords.size() <= 0) continue;
-            avgValue+=(double)amountOfCommonWords(keywords) / keywords.size();
+            if (keywords.size() <= 0) continue;
+            avgValue += (double) amountOfCommonWords(keywords) / keywords.size();
         }
         return FeatureEntity.builder()
                 .value(avgValue / sentences.size())
                 .featureType(FeatureType.AOSCKDS)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AOSCKDS;
     }
 
 }

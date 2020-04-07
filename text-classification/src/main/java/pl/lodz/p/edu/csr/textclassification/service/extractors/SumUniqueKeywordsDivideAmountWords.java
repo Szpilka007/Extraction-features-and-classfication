@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class SumUniqueKeywordsDivideAmountWords implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
     @Autowired
     SumUniqueKeywordsDivideAmountWords(TextProcessor textProcessor) {
@@ -30,6 +30,11 @@ public class SumUniqueKeywordsDivideAmountWords implements Extractor {
                 .value((double) amountOfUniqueWords(keywords) / amountOfWords)
                 .featureType(FeatureType.SUKDAW)
                 .build();
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.SUKDAW;
     }
 
 }
