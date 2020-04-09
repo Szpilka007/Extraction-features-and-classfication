@@ -1,10 +1,8 @@
 package pl.lodz.p.edu.csr.textclassification.service;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.edu.csr.textclassification.model.enums.ElementType;
@@ -19,9 +17,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 @Data
 @Service
@@ -30,9 +30,11 @@ public class XmlParserService {
     @Autowired
     public ReutersRepository reutersRepository;
 
-    public InputStream loadFileFromResources(String path) {
+    private InputStream loadFileFromResources(String path) {
         return getClass().getResourceAsStream(path);
     }
+
+    private List<String> whitelistPlaces = Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan");
 
     @Transactional
     public void deleteAllReutersFromDB() {
@@ -153,7 +155,8 @@ public class XmlParserService {
                 .date(date).topics(topics).places(places)
                 .people(people).orgs(orgs).exchanges(exchanges)
                 .companies(companies).title(title).author(author)
-                .dateline(dateline).body(body).uuid(UUID.randomUUID())
+                .dateline(dateline).body(body)
+                .features(new ArrayList<>())
                 .build();
     }
 
@@ -168,6 +171,19 @@ public class XmlParserService {
             }
         }
         return result;
+    }
+
+    public String prepareDatabase() {
+        Predicate<ReutersEntity> bodyIsNull = i -> i.getBody() == null;
+        Predicate<ReutersEntity> placesSizeIsNotOne = i -> i.getPlaces().size() != 1;
+        Predicate<ReutersEntity> notWhitelist = i -> i.getPlaces().size() == 1 &&
+                !whitelistPlaces.contains(i.getPlaces().get(0));
+
+        List<ReutersEntity> reutersToDelete = reutersRepository.findAll().stream()
+                .filter(bodyIsNull.or(placesSizeIsNotOne).or(notWhitelist))
+                .collect(Collectors.toList());
+        reutersRepository.deleteAll(reutersToDelete);
+        return "Removed " + reutersToDelete.size() + " reuters from database.";
     }
 
 }

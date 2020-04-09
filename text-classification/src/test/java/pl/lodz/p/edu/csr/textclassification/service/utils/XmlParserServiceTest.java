@@ -8,7 +8,10 @@ import pl.lodz.p.edu.csr.textclassification.service.XmlParserService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -127,7 +130,7 @@ class XmlParserServiceTest {
                 .places(Collections.singletonList("uk"))
                 .title("JAGUAR SEES STRONG GROWTH IN NEW MODEL SALES")
                 .topics(Collections.singletonList("earn"))
-                .uuid(UUID.randomUUID())
+                .features(new ArrayList<>())
                 .build();
 
         ReutersEntity actual = xmlParserService.prepareReuters(rawText);

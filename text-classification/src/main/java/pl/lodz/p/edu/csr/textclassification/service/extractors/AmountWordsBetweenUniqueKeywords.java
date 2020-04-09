@@ -2,22 +2,19 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Component
-public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
+public class AmountWordsBetweenUniqueKeywords implements Extractor {
 
-    private final double percentOfArticle = 0.20;
-    private TextProcessor textProcessor;
+    TextProcessor textProcessor;
 
     @Autowired
-    ProportionUniqueKeywordsInPartOfArticle(TextProcessor textProcessor) {
+    AmountWordsBetweenUniqueKeywords(TextProcessor textProcessor){
         this.textProcessor = textProcessor;
     }
 
@@ -25,16 +22,24 @@ public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
     public Double extract(ReutersEntity reuters) {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> keywords = textProcessor.prepare(fullText); // text to keywords
-        int numberOfWordsIncluded = (int) (percentOfArticle * keywords.size());
-        Double quantity = Double.valueOf(this.amountOfUniqueWords(keywords
-                .stream()
-                .limit(numberOfWordsIncluded)
-                .collect(Collectors.toList())));
-        return quantity / (keywords.size() * percentOfArticle);
+        List<String> uniqueWords = getOnlyUniqueWords(keywords);
+        List<Integer> lengths = new ArrayList<>();
+
+        int wordIndex = 0;
+        for(int i=0; i< keywords.size(); i++){
+            if(uniqueWords.contains(keywords.get(i))){
+                lengths.add(i-wordIndex);
+                wordIndex = i;
+            }
+
+        }
+        lengths.remove(0);
+
+        return (double) lengths.stream().reduce((Integer::sum)).get() / (double) lengths.size();
     }
 
     @Override
     public FeatureType getFeatureTypeExtractor() {
-        return FeatureType.PUKIPOA;
+        return FeatureType.AWBUK;
     }
 }
