@@ -43,10 +43,7 @@ public class ExtractionService {
         ReutersEntity reuters = reutersRepository.findReutersEntityByUuid(reuters_uuid);
         reuters.getFeatures().clear();
         for (Extractor extractor : extractorList) {
-            FeatureEntity fe = FeatureEntity.builder()
-                    .featureType(extractor.getFeatureTypeExtractor())
-                    .value(extractor.extract(reuters))
-                    .build();
+            FeatureEntity fe = extractor.extract(reuters);
             reuters.getFeatures().add(fe);
             featuresRepository.save(fe);
         }

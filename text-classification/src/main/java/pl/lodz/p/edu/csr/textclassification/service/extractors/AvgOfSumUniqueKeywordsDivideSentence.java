@@ -25,7 +25,7 @@ public class AvgOfSumUniqueKeywordsDivideSentence implements Extractor {
     public FeatureEntity extract(ReutersEntity reuters) {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> sentences = Arrays.asList(fullText.split("\\. "));
-        Double avgValue = 0.0;
+        double avgValue = 0.0;
         for (String sentence : sentences) {
             List<String> keywords = textProcessor.prepare(sentence);
             if (keywords.size() <= 0) continue;

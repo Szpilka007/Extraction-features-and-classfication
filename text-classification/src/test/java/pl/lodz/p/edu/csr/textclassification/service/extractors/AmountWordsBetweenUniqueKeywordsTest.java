@@ -2,6 +2,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -16,11 +17,11 @@ public class AmountWordsBetweenUniqueKeywordsTest {
     @Test
     public void extract(){
         ReutersEntity reutersEntity = ReutersEntity.builder().body(text).build();
-        Double actual = aosckdp.extract(reutersEntity);
+        FeatureEntity actual = aosckdp.extract(reutersEntity);
         // 4 unique words - > Black, dog, moon, Test, flower
         double expected = (double) (2+ 4 + 1 + 4) / 4;
 
-        Assert.assertEquals(expected, actual, 0.1);
+        Assert.assertEquals(expected, actual.getValue(), 0.1);
     }
 
     public AmountWordsBetweenUniqueKeywordsTest() throws IOException {

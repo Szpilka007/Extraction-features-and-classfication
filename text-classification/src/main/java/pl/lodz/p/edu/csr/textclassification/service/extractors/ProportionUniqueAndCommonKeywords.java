@@ -24,19 +24,12 @@ public class ProportionUniqueAndCommonKeywords implements Extractor {
     public FeatureEntity extract(ReutersEntity reuters) {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> keywords = textProcessor.prepare(fullText); // text to keywords
-        if (getOnlyCommonWords(keywords).size() == 0) {
-            return FeatureEntity
-                    .builder()
-                    .value(0.0)
-                    .featureType(FeatureType.PUACK)
-                    .build();
-        } else {
-            return FeatureEntity
-                    .builder()
-                    .value((double) getOnlyUniqueWords(keywords).size() / getOnlyCommonWords(keywords).size())
-                    .featureType(FeatureType.PUACK)
-                    .build();
-        }
+        Double result = getOnlyCommonWords(keywords).isEmpty() ?
+                0.0 : (double) getOnlyUniqueWords(keywords).size() / getOnlyCommonWords(keywords).size();
+        return FeatureEntity.builder()
+                .value(result)
+                .featureType(FeatureType.PUACK)
+                .build();
     }
 
     @Override

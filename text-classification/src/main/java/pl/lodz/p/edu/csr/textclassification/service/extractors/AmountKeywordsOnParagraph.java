@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
-import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
