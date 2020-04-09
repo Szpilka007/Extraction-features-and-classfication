@@ -74,4 +74,13 @@ public class XmlParserController {
         return "The operation of cleaning the database from reuters was successful!";
     }
 
+    @GetMapping(value = "/removeUselessReuters")
+    @ResponseBody
+    @ApiOperation(value = "Clear database from useless reuters.")
+    @ResponseStatus(HttpStatus.OK)
+    @Loggable(Loggable.TRACE)
+    public String removeUselessReuters() {
+        return xmlParserService.prepareDatabase();
+    }
+
 }

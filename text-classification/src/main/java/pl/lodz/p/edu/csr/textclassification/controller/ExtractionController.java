@@ -21,15 +21,6 @@ public class ExtractionController {
     @Autowired
     ExtractionService extractionService;
 
-    @GetMapping(value = "/removeUselessReuters")
-    @ResponseBody
-    @ApiOperation(value = "Clear database from useless reuters.")
-    @ResponseStatus(HttpStatus.OK)
-    @Loggable(Loggable.TRACE)
-    public String removeUselessReuters() {
-        return extractionService.prepareDatabase();
-    }
-
     @GetMapping(value = "/stats")
     @ResponseBody
     @ApiOperation(value = "Clear database from useless reuters.")

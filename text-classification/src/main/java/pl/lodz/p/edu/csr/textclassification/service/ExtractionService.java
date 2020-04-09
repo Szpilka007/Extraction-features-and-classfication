@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StopWatch;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.FeaturesRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 public class ExtractionService {
 
     private final List<Extractor> extractorList;
-    private List<String> whitelistPlaces = Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan");
 
     @Autowired
     private ReutersRepository reutersRepository;
@@ -37,19 +35,6 @@ public class ExtractionService {
     @Autowired
     public ExtractionService(List<Extractor> extractorList) {
         this.extractorList = Collections.unmodifiableList(extractorList);
-    }
-
-    @Transactional
-    public void test() {
-        featuresRepository.save(FeatureEntity.builder()
-                .uuid(UUID.randomUUID())
-                .featureType(FeatureType.AKOP)
-                .value(5.0).build());
-    }
-
-    @Transactional
-    public void saveFeature(FeatureEntity featureEntity) {
-        featuresRepository.save(featureEntity);
     }
 
     @Transactional()
@@ -76,35 +61,30 @@ public class ExtractionService {
         System.out.println("Extraction of article features for the entire database began.");
         System.out.println("This may take a while ...");
         for (int i = 0; i < allReutersUUID.size(); i++) {
-            if(i%1000 == 0){
-                System.out.println(now.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " sec | " + ((double)(i/allReutersUUID.size())));
+            if (i % 100 == 0) {
+                System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
+                        (double) i / (double) allReutersUUID.size() * 100.0,
+                        now.until(LocalDateTime.now(), ChronoUnit.SECONDS)
+                ));
             } else {
                 extractFeature(UUID.fromString(allReutersUUID.get(i).toString()));
             }
         }
+        System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
+                100.0,
+                now.until(LocalDateTime.now(), ChronoUnit.SECONDS)
+        ));
         return "The extraction of the features was successful! It lasted " +
                 now.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " seconds!";
     }
 
-    public String prepareDatabase() {
-        Predicate<ReutersEntity> bodyIsNull = i -> i.getBody() == null;
-        Predicate<ReutersEntity> placesSizeIsNotOne = i -> i.getPlaces().size() != 1;
-        Predicate<ReutersEntity> notWhitelist = i -> i.getPlaces().size() == 1 &&
-                !whitelistPlaces.contains(i.getPlaces().get(0));
-
-        List<ReutersEntity> reutersToDelete = reutersRepository.findAll().stream()
-                .filter(bodyIsNull.or(placesSizeIsNotOne).or(notWhitelist))
-                .collect(Collectors.toList());
-        reutersRepository.deleteAll(reutersToDelete);
-        return "Removed " + reutersToDelete.size() + " reuters from database.";
-    }
-
     public String stats() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Amount of reuters: " + reutersRepository.count() + "\n");
+        stringBuilder.append("Amount of reuters: ").append(reutersRepository.count()).append("\n");
         stringBuilder.append("=============================================\n");
         List<String> listOfPlaces = reutersRepository.distinctAllPlaces();
-        listOfPlaces.forEach(i -> stringBuilder.append(i + " = " + reutersRepository.countReutersWithPlaces(i) + "\n"));
+        listOfPlaces.forEach(i -> stringBuilder.append(i).append(" = ")
+                .append(reutersRepository.countReutersWithPlaces(i)).append("\n"));
         return stringBuilder.toString();
     }
 
