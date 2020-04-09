@@ -130,6 +130,7 @@ class XmlParserServiceTest {
                 .places(Collections.singletonList("uk"))
                 .title("JAGUAR SEES STRONG GROWTH IN NEW MODEL SALES")
                 .topics(Collections.singletonList("earn"))
+                .features(new ArrayList<>())
                 .build();
 
         ReutersEntity actual = xmlParserService.prepareReuters(rawText);

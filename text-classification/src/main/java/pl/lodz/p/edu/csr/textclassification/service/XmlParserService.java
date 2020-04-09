@@ -17,8 +17,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 @Data
 @Service
@@ -27,9 +30,11 @@ public class XmlParserService {
     @Autowired
     public ReutersRepository reutersRepository;
 
-    public InputStream loadFileFromResources(String path) {
+    private InputStream loadFileFromResources(String path) {
         return getClass().getResourceAsStream(path);
     }
+
+    private List<String> whitelistPlaces = Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan");
 
     @Transactional
     public void deleteAllReutersFromDB() {
@@ -166,6 +171,19 @@ public class XmlParserService {
             }
         }
         return result;
+    }
+
+    public String prepareDatabase() {
+        Predicate<ReutersEntity> bodyIsNull = i -> i.getBody() == null;
+        Predicate<ReutersEntity> placesSizeIsNotOne = i -> i.getPlaces().size() != 1;
+        Predicate<ReutersEntity> notWhitelist = i -> i.getPlaces().size() == 1 &&
+                !whitelistPlaces.contains(i.getPlaces().get(0));
+
+        List<ReutersEntity> reutersToDelete = reutersRepository.findAll().stream()
+                .filter(bodyIsNull.or(placesSizeIsNotOne).or(notWhitelist))
+                .collect(Collectors.toList());
+        reutersRepository.deleteAll(reutersToDelete);
+        return "Removed " + reutersToDelete.size() + " reuters from database.";
     }
 
 }

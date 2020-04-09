@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 public class ReutersService {
 
-    ReutersRepository reutersRepository;
+    private ReutersRepository reutersRepository;
 
     @Autowired
     public ReutersService(ReutersRepository reutersRepository) {
