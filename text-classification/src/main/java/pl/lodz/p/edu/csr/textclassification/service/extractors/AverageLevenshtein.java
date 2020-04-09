@@ -4,22 +4,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 @Component
 public class AverageLevenshtein implements Extractor {
 
-    TextProcessor textProcessor;
+    private TextProcessor textProcessor;
 
-    LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
+    private LevenshteinDistance levenshteinDistance;
 
     @Autowired
     AverageLevenshtein(TextProcessor textProcessor) {
         this.textProcessor = textProcessor;
+        this.levenshteinDistance = new LevenshteinDistance();
     }
 
     @Override
@@ -28,21 +32,22 @@ public class AverageLevenshtein implements Extractor {
         List<String> keywords = textProcessor.prepare(fullText);
         List<String> uniqueWords = getOnlyUniqueWords(keywords);
         List<String> commonWordsWithoutDuplicates = getOnlyCommonWords(keywords).stream().distinct().collect(Collectors.toList());
-        System.out.println(uniqueWords.toString());
-        System.out.println(commonWordsWithoutDuplicates.toString());
-        Integer distances = 0;
+        List<Double> uniqueDistances = new ArrayList<>();
         for (String unique : uniqueWords) {
-            distances += commonWordsWithoutDuplicates.stream()
-                    .peek(i -> System.out.println(levenshteinDistance.apply(unique, i)))
+            uniqueDistances.add(commonWordsWithoutDuplicates.stream()
                     .mapToInt(i -> levenshteinDistance.apply(unique, i))
-                    .sum();
-
-//            List<Integer> allIndexes = IntStream.range(0, commonWordsWithoutDuplicates.size())
-//                    .boxed()
-//                    .mapToInt(i -> levenshteinDistance.apply(unique,i))
-//                    .collect(Collectors.toList()); // get indexes for words with prefix the
+                    .average()
+                    .orElse(0.0));
         }
-        return (double) distances / commonWordsWithoutDuplicates.size();
+        return uniqueDistances.stream()
+                .flatMapToDouble(i -> DoubleStream.of(i.doubleValue()))
+                .average()
+                .orElse(0.0);
+    }
+
+    @Override
+    public FeatureType getFeatureTypeExtractor() {
+        return FeatureType.AL;
     }
 
 }
