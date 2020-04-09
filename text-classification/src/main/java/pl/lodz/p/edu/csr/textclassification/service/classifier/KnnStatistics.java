@@ -4,7 +4,10 @@ package pl.lodz.p.edu.csr.textclassification.service.classifier;
 import org.springframework.stereotype.Service;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -27,18 +30,18 @@ public class KnnStatistics {
         ArrayList<Double> precisions = new ArrayList<>();
         labels.forEach(label -> {
             Integer[] correctReuters = {0};
-            Integer[] labelsAmount= {0};
+            Integer[] labelsAmount = {0};
             processedReuters.forEach((reutersEntity, strings) -> {
-                        if (strings.get(0).equals(label)) {
-                            labelsAmount[0]+=1;
-                            if (reutersEntity.getPlaces().get(0).equals(strings.get(0))) {
-                                correctReuters[0]+=1;
-                            }
-                        }
-                    });
-            if(labelsAmount[0] == 0){
+                if (strings.get(0).equals(label)) {
+                    labelsAmount[0] += 1;
+                    if (reutersEntity.getPlaces().get(0).equals(strings.get(0))) {
+                        correctReuters[0] += 1;
+                    }
+                }
+            });
+            if (labelsAmount[0] == 0) {
                 precisions.add(0.0);
-            }else {
+            } else {
                 precisions.add((double) correctReuters[0] / labelsAmount[0]);
             }
         });
@@ -58,9 +61,9 @@ public class KnnStatistics {
                     }
                 }
             });
-            if(labelsAmount[0] == 0){
+            if (labelsAmount[0] == 0) {
                 recalls.add(0.0);
-            }else {
+            } else {
                 recalls.add((double) correctReuters[0] / labelsAmount[0]);
             }
         });
