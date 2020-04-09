@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Data
@@ -54,16 +55,19 @@ public class TextProcessor {
 
     // Prepare to extraction
     public List<String> prepare(String text) {
-        return Arrays.asList(tokenizerME.tokenize(text)).stream()
+        return Arrays.stream(tokenizerME.tokenize(text))
+                .filter(i -> !listOfStopWords.contains(i.toLowerCase()))
                 .map(i -> porterStemmer.stem(i)).map(String::toLowerCase)
-                .filter(i -> !listOfStopWords.contains(i))
                 .collect(Collectors.toList());
     }
 
     public List<String> prepareWithoutThe(String text) {
-        return Arrays.asList(tokenizerME.tokenize(text)).stream()
+        Predicate<String> stopWordsOne = i -> !listOfStopWords.contains(i.toLowerCase());
+        Predicate<String> stopWordsTwo = i -> i.toLowerCase().equals("the");
+        Predicate<String> stopWordsThree = i -> i.equals(".");
+        return Arrays.stream(tokenizerME.tokenize(text))
+                .filter(stopWordsOne.or(stopWordsTwo).or(stopWordsThree))
                 .map(i -> porterStemmer.stem(i)).map(String::toLowerCase)
-                .filter(i -> !listOfStopWords.contains(i) || i.equals("the") || i.equals("."))
                 .collect(Collectors.toList());
     }
 
