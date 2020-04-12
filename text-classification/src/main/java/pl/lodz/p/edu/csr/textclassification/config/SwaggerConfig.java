@@ -56,6 +56,9 @@ import static springfox.documentation.schema.AlternateTypeRules.newRule;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    @Autowired
+    private TypeResolver typeResolver;
+
     @Bean
     public Docket petApi() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -95,9 +98,6 @@ public class SwaggerConfig {
                 .version("1.0.0")
                 .build();
     }
-
-    @Autowired
-    private TypeResolver typeResolver;
 
     @Bean
     public LinkDiscoverers discovers() {

@@ -1,7 +1,7 @@
 package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;

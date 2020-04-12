@@ -22,7 +22,7 @@ public class AverageLevenshtein implements Extractor {
     private LevenshteinDistance levenshteinDistance;
 
     @Autowired
-    AverageLevenshtein(TextProcessor textProcessor) {
+    public AverageLevenshtein(TextProcessor textProcessor) {
         this.textProcessor = textProcessor;
         this.levenshteinDistance = new LevenshteinDistance();
     }

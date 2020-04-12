@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import pl.lodz.p.edu.csr.textclassification.model.enums.DataGroup;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -78,4 +79,11 @@ public class ReutersEntity implements Serializable {
     @CollectionTable(name = "R_FEATURES", joinColumns = @JoinColumn(name = "reuters_id"))
     private List<FeatureEntity> features;
 
+    @ElementCollection
+    @CollectionTable(name = "R_CLASSIFIED", joinColumns = @JoinColumn(name = "reuters_id"))
+    private List<ClassifiedEntity> classified;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "data_group")
+    private DataGroup dataGroup;
 }

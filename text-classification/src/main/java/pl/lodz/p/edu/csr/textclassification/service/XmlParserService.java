@@ -5,6 +5,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.lodz.p.edu.csr.textclassification.model.enums.DataGroup;
 import pl.lodz.p.edu.csr.textclassification.model.enums.ElementType;
 import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
@@ -18,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -29,12 +31,11 @@ public class XmlParserService {
 
     @Autowired
     public ReutersRepository reutersRepository;
+    private List<String> whitelistPlaces = Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan");
 
     private InputStream loadFileFromResources(String path) {
         return getClass().getResourceAsStream(path);
     }
-
-    private List<String> whitelistPlaces = Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan");
 
     @Transactional
     public void deleteAllReutersFromDB() {
@@ -173,7 +174,35 @@ public class XmlParserService {
         return result;
     }
 
+    @Transactional
     public String prepareDatabase() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[" + LocalDateTime.now() + "]\n");
+        sb.append("================================================\n");
+        sb.append(deleteUselessReuters()).append("\n");
+        sb.append("================================================\n");
+        sb.append(groupAndTagReutersRandomly()).append("\n");
+        sb.append("================================================\n");
+        return sb.toString();
+    }
+
+    private String groupAndTagReutersRandomly() {
+        List<ReutersEntity> reuters = reutersRepository.findAll();
+        Collections.shuffle(reuters);
+        List<DataGroup> groupsTags = Arrays.asList(DataGroup.values());
+        for (int i = 0; i < reuters.size(); i++) {
+            reuters.get(i).setDataGroup(groupsTags.get(i % 10));
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Our data has been randomly divided into given groups:\n");
+        groupsTags.forEach((i -> sb.append("\n")
+                .append(i.toString())
+                .append(" ")
+                .append(reutersRepository.findReutersEntitiesByDataGroup(i).size())));
+        return sb.toString();
+    }
+
+    private String deleteUselessReuters() {
         Predicate<ReutersEntity> bodyIsNull = i -> i.getBody() == null;
         Predicate<ReutersEntity> placesSizeIsNotOne = i -> i.getPlaces().size() != 1;
         Predicate<ReutersEntity> notWhitelist = i -> i.getPlaces().size() == 1 &&

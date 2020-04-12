@@ -1,79 +1,79 @@
 package pl.lodz.p.edu.csr.textclassification.service.classifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.model.enums.DataBreakdown;
+import pl.lodz.p.edu.csr.textclassification.model.enums.DataGroup;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
+import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.Metric;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 public class KnnAlgorithm {
 
-    private final List<Extractor> extractorList;
+    @Autowired
+    private ReutersRepository reutersRepository;
 
     @Autowired
-    KnnAlgorithm(List<Extractor> extractors) {
-        this.extractorList = extractors;
+    KnnAlgorithm(ReutersRepository reutersRepository) {
+        this.reutersRepository = reutersRepository;
     }
 
-    public void calculate(Double k, Double percentOfTestReuters, List<ReutersEntity> groupsToTest, Metric metric) {
-        Map<ReutersEntity, Vector<FeatureEntity>> trainingReutersEntityFeaturesMap = new HashMap<>();
-        Map<ReutersEntity, Vector<FeatureEntity>> learningReutersEntityFeaturesMap = new HashMap<>();
+    public static <T> T mostCommonLabel(List<T> list) {
+        Map<T, Integer> map = new HashMap<>();
 
-        //OTRZYMUJEMY ZBIOR TESTOWY I WYLICZAMY DLA NIEGO CECHY
-        groupsToTest.stream()
-                .limit((int) (percentOfTestReuters * groupsToTest.size()))
-                .forEach(reutersEntity -> {
-                    Vector<FeatureEntity> features = new Vector<>();
-                    this.extractorList.forEach(extractor -> features.add(extractor.extract(reutersEntity)));
-                    trainingReutersEntityFeaturesMap.put(reutersEntity, features);
-                });
+        for (T t : list) {
+            Integer val = map.get(t);
+            map.put(t, val == null ? 1 : val + 1);
+        }
 
-        //OTRZYMUJEMY ZBIOR UCZACY I WYLICZAMY DLA NIEGO CECHY
-        groupsToTest.stream()
-                .skip((int) (percentOfTestReuters * groupsToTest.size()))
-                .forEach(reutersEntity -> {
-                    Vector<FeatureEntity> features = new Vector<>();
-                    this.extractorList.forEach(extractor -> features.add(extractor.extract(reutersEntity)));
-                    learningReutersEntityFeaturesMap.put(reutersEntity, features);
-                });
+        Integer max = map.values().stream().mapToInt(integer -> integer).max().orElse(0);
+        List<T> winnerLabels = map.entrySet().stream()
+                .filter(i -> i.getValue().equals(max))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
 
-        //POROWNUJEMY OBIEKTY Z ZBIORU UCZACEGO POKOLEI Z KAZDYMI CECHAMI Z ZBIORU TESTOWEGO
-        learningReutersEntityFeaturesMap.forEach(((reutersEntity, features) -> {
-            Map<ReutersEntity, Double> metricScoresForFeautres = new HashMap<>();
-            trainingReutersEntityFeaturesMap.forEach((testReutersEntity, testFeatures) -> {
-                try {
-                    metricScoresForFeautres.put(testReutersEntity,metric.calculate(features, testFeatures));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+        Collections.shuffle(winnerLabels);
 
-            //ODRZUCAMY TE METRYKI KTORE NIE SPELNIAJA WARTOSCI
-            //I OTRZYMUJEMY METRYKE KTROA NAJCZESCNIEJ SIE POWTARZA
-            Double filteredMetrics = metricScoresForFeautres.values()
-                    .stream()
-                    .filter(score -> score < k)
-                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-                    .entrySet().stream().max((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
-                    .map(Map.Entry::getKey).orElse(null);
-
-
-            Map<ReutersEntity,List<String>> processedReuters = new HashMap<>();
-            metricScoresForFeautres.forEach((testObject, value) -> {
-                if(value.equals(filteredMetrics)){
-                    processedReuters.put(reutersEntity, testObject.getPlaces());
-                }
-            });
-
-        }));
-
-
+        return winnerLabels.get(0);
     }
+
+    public String classifyReuters(Double k, DataBreakdown dataBreakdown, ReutersEntity toClassify, List<FeatureType> usingFeatureType, Metric metric) throws Exception {
+
+        List<DataGroup> dataGroups = DataBreakdown.getLearningGroups(dataBreakdown);
+        List<ReutersEntity> learningData = reutersRepository.findAll().stream()
+                .filter(i -> dataGroups.contains(i.getDataGroup()))
+                .collect(Collectors.toList());
+
+        Map<ReutersEntity, Double> metricsScoresForFeatures = new HashMap<>();
+        // Calculate distances between learningData and reuters to classify
+        for (ReutersEntity reuters : learningData) {
+            Vector<FeatureEntity> learningFeatures = reuters.getFeatures().stream()
+                    .filter(i -> usingFeatureType.contains(i.getFeatureType()))
+                    .collect(Collectors.toCollection(Vector::new));
+            Vector<FeatureEntity> toClassifyFeatures = toClassify.getFeatures().stream()
+                    .filter(i -> usingFeatureType.contains(i.getFeatureType()))
+                    .collect(Collectors.toCollection(Vector::new));
+//            System.out.println(reuters.toString());
+//            System.out.println(learningFeatures.toString());
+//            System.out.println(toClassifyFeatures.toString());
+//            System.out.println("===================================");
+            metricsScoresForFeatures.put(reuters, metric.calculate(learningFeatures, toClassifyFeatures));
+        }
+
+        List<String> labels = metricsScoresForFeatures.entrySet().stream()
+                .filter(score -> score.getValue() <= k)
+                .map(i -> i.getKey().getPlaces().get(0))
+                .collect(Collectors.toList());
+
+        return mostCommonLabel(labels);
+    }
+
 
 }

@@ -18,7 +18,7 @@ public class AmountKeywordsOnParagraph implements Extractor {
     private TextProcessor textProcessor;
 
     @Autowired
-    AmountKeywordsOnParagraph(TextProcessor textProcessor) {
+    public AmountKeywordsOnParagraph(TextProcessor textProcessor) {
         this.textProcessor = textProcessor;
     }
 
