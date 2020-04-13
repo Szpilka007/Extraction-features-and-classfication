@@ -16,9 +16,7 @@ import pl.lodz.p.edu.csr.textclassification.service.metrics.MetricType;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +43,11 @@ public class ClassificationService {
         Metric usingMetric = metricList.stream()
                 .filter(i -> i.getMetricsType().equals(metric))
                 .findFirst().orElse(null);
-        String result = knnAlgorithm.classifyReuters(k, dataBreakdown, reuters, usedFeatures, usingMetric);
+        List<DataGroup> dataGroupsToLearning = DataBreakdown.getLearningGroups(dataBreakdown);
+        List<ReutersEntity> learningData = reutersRepository.findAll().stream()
+                .filter(i -> dataGroupsToLearning.contains(i.getDataGroup()))
+                .collect(Collectors.toList());
+        String result = knnAlgorithm.classifyReuters(k, learningData, reuters, usedFeatures, usingMetric);
         long duration = now.until(LocalDateTime.now(), ChronoUnit.SECONDS);
         return "Reuters [UUID: " + uuid.toString() + "] classified as [" + result + "] in [" + duration + "] seconds.";
     }
@@ -54,9 +56,13 @@ public class ClassificationService {
     public String classifyAllReuters(Double k, DataBreakdown dataBreakdown,
                                      List<FeatureType> usedFeatures, MetricType metric, String processName) throws Exception {
         LocalDateTime start = LocalDateTime.now();
-        List<DataGroup> dataGroups = DataBreakdown.getTestingGroups(dataBreakdown);
+        List<DataGroup> dataGroupsToTesting = DataBreakdown.getTestingGroups(dataBreakdown);
+        List<DataGroup> dataGroupsToLearning = DataBreakdown.getLearningGroups(dataBreakdown);
+        List<ReutersEntity> learningData = reutersRepository.findAll().stream()
+                .filter(i -> dataGroupsToLearning.contains(i.getDataGroup()))
+                .collect(Collectors.toList());
         List<UUID> reutersToClassify = reutersRepository.findAll().stream()
-                .filter(i -> dataGroups.contains(i.getDataGroup()))
+                .filter(i -> dataGroupsToTesting.contains(i.getDataGroup()))
                 .map(i -> i.getUuid())
                 .collect(Collectors.toList());
         Metric usedMetric = metricList.stream()
@@ -65,7 +71,7 @@ public class ClassificationService {
         for (UUID uuid : reutersToClassify) {
             ReutersEntity reutersEntity = reutersRepository.findReutersEntityByUuid(uuid);
             LocalDateTime now = LocalDateTime.now();
-            String label = knnAlgorithm.classifyReuters(k, dataBreakdown, reutersEntity, usedFeatures, usedMetric);
+            String label = knnAlgorithm.classifyReuters(k, learningData, reutersEntity, usedFeatures, usedMetric);
             ClassifiedEntity classified = ClassifiedEntity.builder()
                     .dataBreakdown(dataBreakdown)
                     .k(k).metricType(metric)

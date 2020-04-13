@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 
@@ -97,9 +98,13 @@ class KnnAlgorithmTest {
         // result is A or B label
     void classificationForResultEqualForAorB() throws Exception {
         when(reutersRepository.findAll()).thenReturn(Arrays.asList(A1, A2, A3, B1, B2, B3, C0));
+        List<DataGroup> dataGroupsToLearning = DataBreakdown.getLearningGroups(DataBreakdown.L20T80);
+        List<ReutersEntity> learningData = reutersRepository.findAll().stream()
+                .filter(i -> dataGroupsToLearning.contains(i.getDataGroup()))
+                .collect(Collectors.toList());
         List<String> actual = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            actual.add(knnAlgorithm.classifyReuters(3.0, DataBreakdown.L20T80, C0, usingFeatures, metric));
+            actual.add(knnAlgorithm.classifyReuters(3.0, learningData, C0, usingFeatures, metric));
         }
         System.out.println(actual);
 
@@ -109,9 +114,13 @@ class KnnAlgorithmTest {
         // result is B (always)
     void classificationForResultEqualForB() throws Exception {
         when(reutersRepository.findAll()).thenReturn(Arrays.asList(A1, A2, A3, B1, B2, B3, C0));
+        List<DataGroup> dataGroupsToLearning = DataBreakdown.getLearningGroups(DataBreakdown.L20T80);
+        List<ReutersEntity> learningData = reutersRepository.findAll().stream()
+                .filter(i -> dataGroupsToLearning.contains(i.getDataGroup()))
+                .collect(Collectors.toList());
         List<String> actual = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            actual.add(knnAlgorithm.classifyReuters(5.0, DataBreakdown.L20T80, C0, usingFeatures, metric));
+            actual.add(knnAlgorithm.classifyReuters(5.0, learningData, C0, usingFeatures, metric));
         }
         Assert.assertTrue(actual.contains("B"));
         Assert.assertFalse(actual.contains("A"));

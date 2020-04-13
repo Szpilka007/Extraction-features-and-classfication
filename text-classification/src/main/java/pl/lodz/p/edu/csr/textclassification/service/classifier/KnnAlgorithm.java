@@ -13,6 +13,7 @@ import pl.lodz.p.edu.csr.textclassification.service.metrics.Metric;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class KnnAlgorithm {
@@ -44,13 +45,7 @@ public class KnnAlgorithm {
         return winnerLabels.get(0);
     }
 
-    public String classifyReuters(Double k, DataBreakdown dataBreakdown, ReutersEntity toClassify, List<FeatureType> usingFeatureType, Metric metric) throws Exception {
-
-        List<DataGroup> dataGroups = DataBreakdown.getLearningGroups(dataBreakdown);
-        List<ReutersEntity> learningData = reutersRepository.findAll().stream()
-                .filter(i -> dataGroups.contains(i.getDataGroup()))
-                .collect(Collectors.toList());
-
+    public String classifyReuters(Double k, List<ReutersEntity> learningData, ReutersEntity toClassify, List<FeatureType> usingFeatureType, Metric metric) throws Exception {
         Map<ReutersEntity, Double> metricsScoresForFeatures = new HashMap<>();
         // Calculate distances between learningData and reuters to classify
         for (ReutersEntity reuters : learningData) {
@@ -60,10 +55,6 @@ public class KnnAlgorithm {
             Vector<FeatureEntity> toClassifyFeatures = toClassify.getFeatures().stream()
                     .filter(i -> usingFeatureType.contains(i.getFeatureType()))
                     .collect(Collectors.toCollection(Vector::new));
-//            System.out.println(reuters.toString());
-//            System.out.println(learningFeatures.toString());
-//            System.out.println(toClassifyFeatures.toString());
-//            System.out.println("===================================");
             metricsScoresForFeatures.put(reuters, metric.calculate(learningFeatures, toClassifyFeatures));
         }
 

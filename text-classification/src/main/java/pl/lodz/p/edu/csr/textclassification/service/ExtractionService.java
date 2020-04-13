@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.lodz.p.edu.csr.textclassification.model.Feature;
+import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.FeaturesRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
@@ -13,6 +15,7 @@ import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.function.Predicate;
 
 @Service
 @Data
@@ -98,6 +101,37 @@ public class ExtractionService {
                 .filter(i -> i.getFeatures().size() == 0)
                 .forEach(i -> sb.append(i.getUuid()).append("\n\n").append(i.getBody()).append("\n\n\n"));
         return sb.toString();
+    }
+
+    @Transactional
+    public String normalizeAllFeatures(){
+        LocalDateTime now = LocalDateTime.now();
+        List<FeatureEntity> features = featuresRepository.findAll();
+        List<FeatureType> featureTypes = Arrays.asList(FeatureType.values());
+        for(FeatureType featureType : featureTypes){
+            Double max = getMaxValueForFeatures(featureType);
+            Double min = getMinValueForFeatures(featureType);
+            features.stream()
+                    .filter(i -> i.getFeatureType().equals(featureType))
+                    .forEach(i -> i.setValue((i.getValue()-min)/(max-min)));
+            System.out.println((double)featureTypes.indexOf(featureType)/(double)featureTypes.size()+" %");
+        }
+        featuresRepository.saveAll(features);
+        return "Data normalization completed! It took ["+now.until(LocalDateTime.now(),ChronoUnit.SECONDS)+"] seconds.";
+    }
+
+    private Double getMaxValueForFeatures(FeatureType featureType){
+        return featuresRepository.findAll().stream()
+                .filter(i -> i.getFeatureType().equals(featureType))
+                .map(FeatureEntity::getValue)
+                .max(Double::compare).orElse(0.0);
+    }
+
+    private Double getMinValueForFeatures(FeatureType featureType){
+        return featuresRepository.findAll().stream()
+                .filter(i -> i.getFeatureType().equals(featureType))
+                .map(FeatureEntity::getValue)
+                .min(Double::compare).orElse(0.0);
     }
 
 }
