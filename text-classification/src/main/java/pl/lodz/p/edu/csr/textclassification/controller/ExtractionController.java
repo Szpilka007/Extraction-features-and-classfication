@@ -67,4 +67,21 @@ public class ExtractionController {
         extractionService.dropFeatures();
     }
 
+    @GetMapping(value = "/statsFeatures")
+    @ResponseBody
+    @ApiOperation(value = "Check stats for calculated features.")
+    @ResponseStatus(HttpStatus.OK)
+    public String checkStatusForFeatures(){
+        return extractionService.checkStatusForFeatures();
+    }
+
+    @GetMapping(value = "/normalize")
+    @ResponseBody
+    @ApiOperation(value = "Normalize all features data.")
+    @ResponseStatus(HttpStatus.OK)
+    public String normalizeAllFeatures(){
+        return extractionService.normalizeAllFeatures();
+    }
+
+
 }

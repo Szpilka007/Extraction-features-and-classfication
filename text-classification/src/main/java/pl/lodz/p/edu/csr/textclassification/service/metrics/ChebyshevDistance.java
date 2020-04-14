@@ -1,9 +1,11 @@
 package pl.lodz.p.edu.csr.textclassification.service.metrics;
 
+import org.springframework.stereotype.Component;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 
 import java.util.*;
 
+@Component
 public class ChebyshevDistance implements Metric {
 
     @Override

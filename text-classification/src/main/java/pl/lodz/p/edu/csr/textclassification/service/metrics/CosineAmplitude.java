@@ -1,10 +1,12 @@
 package pl.lodz.p.edu.csr.textclassification.service.metrics;
 
+import org.springframework.stereotype.Component;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 
 import java.util.Iterator;
 import java.util.Vector;
 
+@Component
 public class CosineAmplitude implements Metric {
     @Override
     public Double calculate(Vector<FeatureEntity> a, Vector<FeatureEntity> b) throws Exception {

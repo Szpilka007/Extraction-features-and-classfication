@@ -2,6 +2,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -19,13 +20,13 @@ class AmountKeywordsOnParagraphTest {
     @Test
     public void extract() {
         ReutersEntity reutersEntity = ReutersEntity.builder().body(text).build();
-        Double actual = akop.extract(reutersEntity);
+        FeatureEntity actual = akop.extract(reutersEntity);
         // 1 -> 11 words
         // 2 -> 4 words
         // 3 -> 1 word (reuters - but in stoplist - skipped)
         double firstSentence = 11;
         double secondSentence = 4;
         double expected = (firstSentence + secondSentence) / 2.0;
-        Assert.assertEquals(expected, actual, 0.1);
+        Assert.assertEquals(expected, actual.getValue(), 0.1);
     }
 }

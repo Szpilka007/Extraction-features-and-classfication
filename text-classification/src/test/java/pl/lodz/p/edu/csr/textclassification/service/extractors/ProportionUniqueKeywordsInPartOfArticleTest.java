@@ -3,6 +3,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -30,8 +31,8 @@ class ProportionUniqueKeywordsInPartOfArticleTest {
 
         double expected = 2.0 / (12 * 0.2);
         System.out.println(reutersEntity.toString());
-        double actual = pukipoa.extract(reutersEntity);
-        Assert.assertEquals(expected, actual, 0.1);
+        FeatureEntity actual = pukipoa.extract(reutersEntity);
+        Assert.assertEquals(expected, actual.getValue(), 0.1);
     }
 
 }

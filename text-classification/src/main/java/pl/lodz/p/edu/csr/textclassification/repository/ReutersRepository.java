@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import pl.lodz.p.edu.csr.textclassification.model.enums.DataGroup;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface ReutersRepository extends JpaRepository<ReutersEntity, Long> {
 
     @Query("SELECT r.uuid FROM ReutersEntity r")
     List<UUID> getAllReutersUUID();
+
+    List<ReutersEntity> findReutersEntitiesByDataGroup(DataGroup datagroup);
 }

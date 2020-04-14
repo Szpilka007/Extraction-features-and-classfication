@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -22,7 +23,7 @@ public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
     }
 
     @Override
-    public Double extract(ReutersEntity reuters) {
+    public FeatureEntity extract(ReutersEntity reuters) {
         String fullText = StringUtils.normalizeSpace(reuters.getBody()); // skipping paragraphs
         List<String> keywords = textProcessor.prepare(fullText); // text to keywords
         int numberOfWordsIncluded = (int) (percentOfArticle * keywords.size());
@@ -30,7 +31,11 @@ public class ProportionUniqueKeywordsInPartOfArticle implements Extractor {
                 .stream()
                 .limit(numberOfWordsIncluded)
                 .collect(Collectors.toList())));
-        return quantity / (keywords.size() * percentOfArticle);
+        return FeatureEntity
+                .builder()
+                .value(quantity / (keywords.size() * percentOfArticle))
+                .featureType(FeatureType.PUKIPOA)
+                .build();
     }
 
     @Override

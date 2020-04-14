@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.lodz.p.edu.csr.textclassification.model.Feature;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.repository.FeaturesRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
@@ -13,12 +14,8 @@ import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -43,10 +40,7 @@ public class ExtractionService {
         ReutersEntity reuters = reutersRepository.findReutersEntityByUuid(reuters_uuid);
         reuters.getFeatures().clear();
         for (Extractor extractor : extractorList) {
-            FeatureEntity fe = FeatureEntity.builder()
-                    .featureType(extractor.getFeatureTypeExtractor())
-                    .value(extractor.extract(reuters))
-                    .build();
+            FeatureEntity fe = extractor.extract(reuters);
             reuters.getFeatures().add(fe);
             featuresRepository.save(fe);
         }
@@ -66,9 +60,8 @@ public class ExtractionService {
                         (double) i / (double) allReutersUUID.size() * 100.0,
                         now.until(LocalDateTime.now(), ChronoUnit.SECONDS)
                 ));
-            } else {
-                extractFeature(UUID.fromString(allReutersUUID.get(i).toString()));
             }
+            extractFeature(UUID.fromString(allReutersUUID.get(i).toString()));
         }
         System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
                 100.0,
@@ -90,6 +83,55 @@ public class ExtractionService {
 
     public void dropFeatures() {
         featuresRepository.deleteAll();
+    }
+
+    public String checkStatusForFeatures() {
+        // size / quantity reuters with this size
+        Map<Integer, Integer> map = new HashMap<>();
+        for (ReutersEntity t : reutersRepository.findAll()) {
+            Integer val = map.get(t.getFeatures().size());
+            map.put(t.getFeatures().size(), val == null ? 1 : val + 1);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            sb.append("SIZE: ").append(entry.getKey()).append(" | QUANTITY: ").append(entry.getValue()).append("\n");
+        }
+        sb.append("==============================\n").append("BROKEN REUTERS: \n\n");
+        reutersRepository.findAll().stream()
+                .filter(i -> i.getFeatures().size() == 0)
+                .forEach(i -> sb.append(i.getUuid()).append("\n\n").append(i.getBody()).append("\n\n\n"));
+        return sb.toString();
+    }
+
+    @Transactional
+    public String normalizeAllFeatures(){
+        LocalDateTime now = LocalDateTime.now();
+        List<FeatureEntity> features = featuresRepository.findAll();
+        List<FeatureType> featureTypes = Arrays.asList(FeatureType.values());
+        for(FeatureType featureType : featureTypes){
+            Double max = getMaxValueForFeatures(featureType);
+            Double min = getMinValueForFeatures(featureType);
+            features.stream()
+                    .filter(i -> i.getFeatureType().equals(featureType))
+                    .forEach(i -> i.setValue((i.getValue()-min)/(max-min)));
+            System.out.println((double)featureTypes.indexOf(featureType)/(double)featureTypes.size()+" %");
+        }
+        featuresRepository.saveAll(features);
+        return "Data normalization completed! It took ["+now.until(LocalDateTime.now(),ChronoUnit.SECONDS)+"] seconds.";
+    }
+
+    private Double getMaxValueForFeatures(FeatureType featureType){
+        return featuresRepository.findAll().stream()
+                .filter(i -> i.getFeatureType().equals(featureType))
+                .map(FeatureEntity::getValue)
+                .max(Double::compare).orElse(0.0);
+    }
+
+    private Double getMinValueForFeatures(FeatureType featureType){
+        return featuresRepository.findAll().stream()
+                .filter(i -> i.getFeatureType().equals(featureType))
+                .map(FeatureEntity::getValue)
+                .min(Double::compare).orElse(0.0);
     }
 
 }

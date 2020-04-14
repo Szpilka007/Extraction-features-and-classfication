@@ -2,6 +2,7 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import opennlp.tools.tokenize.SimpleTokenizer;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 
 import java.util.Arrays;
@@ -14,11 +15,11 @@ public interface Extractor {
 
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
 
+    FeatureEntity extract(ReutersEntity reuters);
+
     static List<String> tokenize(String rawArticleText) {
         return Arrays.asList(tokenizer.tokenize(rawArticleText));
     }
-
-    Double extract(ReutersEntity reuters);
 
     default List<String> getOnlyUniqueWords(List<String> words) {
         return words.stream()

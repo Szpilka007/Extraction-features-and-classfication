@@ -2,7 +2,9 @@ package pl.lodz.p.edu.csr.textclassification.service.extractors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.lodz.p.edu.csr.textclassification.model.Feature;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
+import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.utils.TextProcessor;
 
@@ -22,7 +24,7 @@ public class AvgOfSumCommonKeywordsDivideParagraph implements Extractor {
     }
 
     @Override
-    public Double extract(ReutersEntity reuters) {
+    public FeatureEntity extract(ReutersEntity reuters) {
         List<String> paragraphs = Arrays.asList(reuters.getBody().split(PARAGRAPH_SPLIT_REGEX));
         double avgValue = 0.0;
         for (String paragraph : paragraphs) {
@@ -30,7 +32,11 @@ public class AvgOfSumCommonKeywordsDivideParagraph implements Extractor {
             if (keywords.size() <= 0) continue;
             avgValue += (double) amountOfCommonWords(keywords) / keywords.size();
         }
-        return avgValue / paragraphs.size();
+        return FeatureEntity
+                .builder()
+                .value(avgValue / paragraphs.size())
+                .featureType(FeatureType.AOSCKDP)
+                .build();
     }
 
     @Override
