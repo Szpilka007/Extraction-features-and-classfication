@@ -51,9 +51,9 @@ public class ClassificationController {
     public String classifyAllExample() {
         System.out.println("TEST");
         List<FeatureType> usedFeatures = Arrays.asList(FeatureType.SCKDAW, FeatureType.SUKDAW);
-        System.out.println(0.5 +" "+DataBreakdown.L90T10.toString()+" "+usedFeatures.toString()+" "+MetricType.EUCLIDEAN.toString()+" test1");
+        System.out.println(8.0 +" "+DataBreakdown.L50T50.toString()+" "+usedFeatures.toString()+" "+MetricType.EUCLIDEAN.toString()+" test1");
         try {
-            return classificationService.classifyAllReuters(0.8, DataBreakdown.L20T80, usedFeatures, MetricType.EUCLIDEAN, "test1");
+            return classificationService.classifyAllReuters(8.0, DataBreakdown.L20T80, usedFeatures, MetricType.EUCLIDEAN, "test1");
         } catch (Exception e) {
             e.printStackTrace();
         }

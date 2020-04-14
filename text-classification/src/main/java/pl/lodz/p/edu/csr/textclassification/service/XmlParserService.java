@@ -17,10 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -177,12 +174,14 @@ public class XmlParserService {
     @Transactional
     public String prepareDatabase() {
         StringBuilder sb = new StringBuilder();
-        sb.append("[" + LocalDateTime.now() + "]\n");
-        sb.append("================================================\n");
-        sb.append(deleteUselessReuters()).append("\n");
-        sb.append("================================================\n");
-        sb.append(groupAndTagReutersRandomly()).append("\n");
-        sb.append("================================================\n");
+        sb.append("[" + LocalDateTime.now() + "]");
+        sb.append("\n================================================\n");
+        sb.append(deleteUselessReuters());
+        sb.append("\n================================================\n");
+        sb.append(deleteSenselessReuters());
+        sb.append("\n================================================\n");
+        sb.append(groupAndTagReutersRandomly());
+        sb.append("\n================================================\n");
         return sb.toString();
     }
 
@@ -212,7 +211,25 @@ public class XmlParserService {
                 .filter(bodyIsNull.or(placesSizeIsNotOne).or(notWhitelist))
                 .collect(Collectors.toList());
         reutersRepository.deleteAll(reutersToDelete);
-        return "Removed " + reutersToDelete.size() + " reuters from database.";
+        return "Removed " + reutersToDelete.size() + " useless articles from database.";
+    }
+
+    private String deleteSenselessReuters(){
+        List<String> blackListPhrases = Arrays.asList("Qtly","Shr","Qtlry","Net","--","Annual","Oper","Semi-annual","div","cts","Mthly");
+        Set<ReutersEntity> senselessReuters = new HashSet<>();
+        for(String phrase : blackListPhrases) {
+            senselessReuters.addAll(
+                    reutersRepository.findAll().stream()
+                    .filter(i -> i.getBody().contains(phrase))
+                    .collect(Collectors.toList())
+            );
+        }
+        reutersRepository.deleteAll(senselessReuters);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Articles containing words from the blacklist below have been removed.\n");
+        sb.append("Blacklist: ").append(blackListPhrases.toString()).append("\n");
+        sb.append("Deleting "+senselessReuters.size()+" senseless articles successfully!");
+        return sb.toString();
     }
 
 }

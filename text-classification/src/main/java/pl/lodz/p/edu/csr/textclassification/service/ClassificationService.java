@@ -83,12 +83,12 @@ public class ClassificationService {
             reutersEntity.getClassified().add(classified);
             classifiedRepository.save(classified);
             reutersRepository.save(reutersEntity);
-//            if (reutersToClassify.indexOf(reutersEntity) % 100 == 0) {
+            if (reutersToClassify.indexOf(uuid) % 50 == 0) {
                 System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
                         (double) reutersToClassify.indexOf(uuid) / (double) reutersToClassify.size(),
                         start.until(LocalDateTime.now(), ChronoUnit.SECONDS)
                 ));
-//            }
+            }
         }
         long duration = start.until(LocalDateTime.now(), ChronoUnit.SECONDS);
         return "Classified [" + reutersToClassify.size() + "] reuters successful in [" + duration + "].";
