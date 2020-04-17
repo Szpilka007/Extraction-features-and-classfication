@@ -1,32 +1,18 @@
 package pl.lodz.p.edu.csr.textclassification.service.classifier;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.lodz.p.edu.csr.textclassification.model.enums.DataBreakdown;
-import pl.lodz.p.edu.csr.textclassification.model.enums.DataGroup;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
-import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
-import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.Metric;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class KnnAlgorithm {
 
-    @Autowired
-    private ReutersRepository reutersRepository;
-
-    @Autowired
-    KnnAlgorithm(ReutersRepository reutersRepository) {
-        this.reutersRepository = reutersRepository;
-    }
-
-    public static <T> T mostCommonLabel(List<T> list) {
+    static <T> T mostCommonLabel(List<T> list) {
         Map<T, Integer> map = new HashMap<>();
 
         for (T t : list) {
