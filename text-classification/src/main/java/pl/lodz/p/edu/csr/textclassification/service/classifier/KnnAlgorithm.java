@@ -32,7 +32,7 @@ public class KnnAlgorithm {
     }
 
     public String classifyReuters(Double k, List<ReutersEntity> learningData, ReutersEntity toClassify, List<FeatureType> usingFeaturesType, Metric metric) throws Exception {
-        Map<ReutersEntity, Double> metricsScoresForFeatures = new HashMap<>();
+        Map<String, Double> metricsScoresForFeatures = new HashMap<>();
         // Calculate distances between learningData and reuters to classify
         for (ReutersEntity reuters : learningData) {
             Vector<FeatureEntity> learningFeatures = reuters.getFeatures().stream()
@@ -41,15 +41,19 @@ public class KnnAlgorithm {
             Vector<FeatureEntity> toClassifyFeatures = toClassify.getFeatures().stream()
                     .filter(i -> usingFeaturesType.contains(i.getFeatureType()))
                     .collect(Collectors.toCollection(Vector::new));
-            metricsScoresForFeatures.put(reuters, metric.calculate(learningFeatures, toClassifyFeatures));
+            metricsScoresForFeatures.put(reuters.getPlaces().get(0), metric.calculate(learningFeatures, toClassifyFeatures));
         }
 
         List<String> labels = metricsScoresForFeatures.entrySet().stream()
                 .filter(score -> score.getValue() <= k)
-                .map(i -> i.getKey().getPlaces().get(0))
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        return mostCommonLabel(labels);
+        try {
+            return mostCommonLabel(labels);
+        } catch (IndexOutOfBoundsException e){
+            return "unknown";
+        }
     }
 
 
