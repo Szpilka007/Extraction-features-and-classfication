@@ -53,7 +53,7 @@ class KnnAlgorithmTest {
     @Mock
     Metric metric;
 
-    List<FeatureType> usingFeatures = Arrays.asList(FeatureType.AL, FeatureType.AKOP);
+    private List<FeatureType> usingFeatures = Arrays.asList(FeatureType.AL, FeatureType.AKOP);
 
     // Features Values
     private FeatureEntity A1X = FeatureEntity.builder().featureType(FeatureType.AL).value(2.0).build();
@@ -90,7 +90,7 @@ class KnnAlgorithmTest {
     @BeforeEach
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
-        this.knnAlgorithm = new KnnAlgorithm(reutersRepository);
+        this.knnAlgorithm = new KnnAlgorithm();
         this.metric = new EuclideanDistance();
     }
 

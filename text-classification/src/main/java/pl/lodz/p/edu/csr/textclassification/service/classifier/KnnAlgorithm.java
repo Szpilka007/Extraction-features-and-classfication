@@ -1,32 +1,18 @@
 package pl.lodz.p.edu.csr.textclassification.service.classifier;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import pl.lodz.p.edu.csr.textclassification.model.enums.DataBreakdown;
-import pl.lodz.p.edu.csr.textclassification.model.enums.DataGroup;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
-import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.FeatureEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
-import pl.lodz.p.edu.csr.textclassification.service.extractors.Extractor;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.Metric;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class KnnAlgorithm {
 
-    @Autowired
-    private ReutersRepository reutersRepository;
-
-    @Autowired
-    KnnAlgorithm(ReutersRepository reutersRepository) {
-        this.reutersRepository = reutersRepository;
-    }
-
-    public static <T> T mostCommonLabel(List<T> list) {
+    static <T> T mostCommonLabel(List<T> list) {
         Map<T, Integer> map = new HashMap<>();
 
         for (T t : list) {
@@ -45,15 +31,15 @@ public class KnnAlgorithm {
         return winnerLabels.get(0);
     }
 
-    public String classifyReuters(Double k, List<ReutersEntity> learningData, ReutersEntity toClassify, List<FeatureType> usingFeatureType, Metric metric) throws Exception {
+    public String classifyReuters(Double k, List<ReutersEntity> learningData, ReutersEntity toClassify, List<FeatureType> usingFeaturesType, Metric metric) throws Exception {
         Map<ReutersEntity, Double> metricsScoresForFeatures = new HashMap<>();
         // Calculate distances between learningData and reuters to classify
         for (ReutersEntity reuters : learningData) {
             Vector<FeatureEntity> learningFeatures = reuters.getFeatures().stream()
-                    .filter(i -> usingFeatureType.contains(i.getFeatureType()))
+                    .filter(i -> usingFeaturesType.contains(i.getFeatureType()))
                     .collect(Collectors.toCollection(Vector::new));
             Vector<FeatureEntity> toClassifyFeatures = toClassify.getFeatures().stream()
-                    .filter(i -> usingFeatureType.contains(i.getFeatureType()))
+                    .filter(i -> usingFeaturesType.contains(i.getFeatureType()))
                     .collect(Collectors.toCollection(Vector::new));
             metricsScoresForFeatures.put(reuters, metric.calculate(learningFeatures, toClassifyFeatures));
         }
