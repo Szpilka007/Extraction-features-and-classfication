@@ -31,15 +31,15 @@ public class KnnAlgorithm {
         return winnerLabels.get(0);
     }
 
-    public String classifyReuters(Double k, List<ReutersEntity> learningData, ReutersEntity toClassify, List<FeatureType> usingFeatureType, Metric metric) throws Exception {
+    public String classifyReuters(Double k, List<ReutersEntity> learningData, ReutersEntity toClassify, List<FeatureType> usingFeaturesType, Metric metric) throws Exception {
         Map<ReutersEntity, Double> metricsScoresForFeatures = new HashMap<>();
         // Calculate distances between learningData and reuters to classify
         for (ReutersEntity reuters : learningData) {
             Vector<FeatureEntity> learningFeatures = reuters.getFeatures().stream()
-                    .filter(i -> usingFeatureType.contains(i.getFeatureType()))
+                    .filter(i -> usingFeaturesType.contains(i.getFeatureType()))
                     .collect(Collectors.toCollection(Vector::new));
             Vector<FeatureEntity> toClassifyFeatures = toClassify.getFeatures().stream()
-                    .filter(i -> usingFeatureType.contains(i.getFeatureType()))
+                    .filter(i -> usingFeaturesType.contains(i.getFeatureType()))
                     .collect(Collectors.toCollection(Vector::new));
             metricsScoresForFeatures.put(reuters, metric.calculate(learningFeatures, toClassifyFeatures));
         }

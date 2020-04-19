@@ -34,13 +34,12 @@ public class ClassificationController {
                                          @RequestParam List<FeatureType> usedFeatures,
                                          @RequestParam MetricType metric,
                                          @RequestParam String processName) {
-        System.out.println("TEST");
         try {
             return classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, processName);
         } catch (Exception e) {
             e.printStackTrace();
+            return "CLASSIFIED PROCESS FAILED!\n\n"+e.getMessage();
         }
-        return "CLASSIFIED PROCESS FAILED!\n\n";
     }
 
     @GetMapping(value = "/example")

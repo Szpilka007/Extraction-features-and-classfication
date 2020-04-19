@@ -23,7 +23,7 @@ public class ExtractionController {
 
     @GetMapping(value = "/stats")
     @ResponseBody
-    @ApiOperation(value = "Clear database from useless reuters.")
+    @ApiOperation(value = "Check reuters stats.")
     @ResponseStatus(HttpStatus.OK)
     @Loggable(Loggable.TRACE)
     public String stats() {
