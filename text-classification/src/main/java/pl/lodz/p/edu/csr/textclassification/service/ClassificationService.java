@@ -54,7 +54,14 @@ public class ClassificationService {
 
     @Transactional
     public String classifyAllReuters(Double k, DataBreakdown dataBreakdown,
-                                     List<FeatureType> usedFeatures, MetricType metric, String processName) throws Exception {
+                                     List<FeatureType> usedFeatures, MetricType metric, String customProcessName) throws Exception {
+        String processName = customProcessName;
+        if(customProcessName.equals("")){
+            processName = "K[" + k + "]" +
+                    "_DataBreakdown[" + DataBreakdown.valueOf(dataBreakdown.toString()) + "]" +
+                    "_Metric[" + MetricType.valueOf(metric.toString()) + "]" +
+                    "_Features[" + FeatureType.packFeatures(usedFeatures) + "]";
+        }
         LocalDateTime start = LocalDateTime.now();
         List<DataGroup> dataGroupsToTesting = DataBreakdown.getTestingGroups(dataBreakdown);
         List<DataGroup> dataGroupsToLearning = DataBreakdown.getLearningGroups(dataBreakdown);
@@ -63,7 +70,7 @@ public class ClassificationService {
                 .collect(Collectors.toList());
         List<UUID> reutersToClassify = reutersRepository.findAll().stream()
                 .filter(i -> dataGroupsToTesting.contains(i.getDataGroup()))
-                .map(i -> i.getUuid())
+                .map(ReutersEntity::getUuid)
                 .collect(Collectors.toList());
         Metric usedMetric = metricList.stream()
                 .filter(i -> i.getMetricsType() == metric)
@@ -83,12 +90,12 @@ public class ClassificationService {
             reutersEntity.getClassified().add(classified);
             classifiedRepository.save(classified);
             reutersRepository.save(reutersEntity);
-            if (reutersToClassify.indexOf(uuid) % 50 == 0) {
-                System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
-                        (double) reutersToClassify.indexOf(uuid) / (double) reutersToClassify.size(),
-                        start.until(LocalDateTime.now(), ChronoUnit.SECONDS)
-                ));
-            }
+//            if (reutersToClassify.indexOf(uuid) % 50 == 0) {
+//                System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
+//                        (double) reutersToClassify.indexOf(uuid) / (double) reutersToClassify.size(),
+//                        start.until(LocalDateTime.now(), ChronoUnit.SECONDS)
+//                ));
+//            }
         }
         long duration = start.until(LocalDateTime.now(), ChronoUnit.SECONDS);
         return "Classified [" + reutersToClassify.size() + "] reuters successful in [" + duration + "].";
@@ -122,6 +129,36 @@ public class ClassificationService {
         }
         reutersRepository.saveAll(toDelete);
         return "Deleted all classification data in [" + now.until(LocalDateTime.now(), ChronoUnit.SECONDS) + "] sec.";
+    }
+
+    @Transactional(readOnly = true)
+    public String theBestK(){
+        List<String> listOfTests = classifiedRepository.findAll().stream()
+                .map(ClassifiedEntity::getName)
+                .distinct()
+                .collect(Collectors.toList());
+        StringBuilder sb = new StringBuilder();
+        List<ReutersEntity> allReuters = reutersRepository.findAll();
+        for(String name : listOfTests){
+            Map<String, String> orgClass = new HashMap<>();
+            for(ReutersEntity reuters : allReuters){
+                if(reuters.getClassified().isEmpty()) continue;
+                Optional<String> classed = reuters.getClassified().stream()
+                        .filter(i -> i.getName().equals(name))
+                        .map(ClassifiedEntity::getLabel)
+                        .findAny();
+                classed.ifPresent(s -> orgClass.put(reuters.getPlaces().get(0), s));
+
+            }
+//            sb.append(orgClass.values()).append("\n");
+            long correct = orgClass.entrySet().stream().filter(i-> i.getKey().equals(i.getValue())).count();
+            double percent = (double) correct / (double) orgClass.entrySet().size() * 100.0;
+//            if(percent > 33.0){
+                sb.append(name).append(" | Effectiveness = ").append(percent).append("\n");
+//            }
+        }
+//        sb.append(classifiedRepository.findAll().stream().map(i -> i.getLabel()).collect(Collectors.toList()).toString());
+        return sb.toString();
     }
 
 }

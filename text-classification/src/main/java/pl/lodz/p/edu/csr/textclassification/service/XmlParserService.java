@@ -39,6 +39,11 @@ public class XmlParserService {
         reutersRepository.deleteAll();
     }
 
+    @Transactional(readOnly = true)
+    public long getAmountOfReuters(){
+        return reutersRepository.findAll().size();
+    }
+
     @Transactional
     public void migrateReutersToDatabase(String relatedPath) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(loadFileFromResources(relatedPath), StandardCharsets.ISO_8859_1))) {

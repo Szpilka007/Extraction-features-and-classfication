@@ -1,20 +1,24 @@
 package pl.lodz.p.edu.csr.textclassification.controller;
 
-import com.jcabi.aspects.Loggable;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.edu.csr.textclassification.service.XmlParserService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import springfox.documentation.spring.web.paths.Paths;
+
 @Controller
 @Api(value = "XML Parser Module")
 @RequestMapping("/h2-xml")
+@PreAuthorize("hasRole('ADMIN')")
 public class XmlParserController {
 
     @Autowired
@@ -24,7 +28,6 @@ public class XmlParserController {
     @ResponseBody
     @ApiOperation(value = "Load single reuters from resources by related file path.")
     @ResponseStatus(HttpStatus.CREATED)
-    @Loggable(Loggable.TRACE)
     public String loadXmlReutersToDB(@RequestParam String filePath) {
         try {
             xmlParserService.migrateReutersToDatabase(filePath);
@@ -35,11 +38,10 @@ public class XmlParserController {
         return "Loaded to database {" + filePath + "} => SUCCESSFUL!";
     }
 
-    @PostMapping(value = "/load-all")
+    @GetMapping(value = "/load-all")
     @ResponseBody
     @ApiOperation(value = "Load all reuters from resources.")
     @ResponseStatus(HttpStatus.CREATED)
-    @Loggable(Loggable.TRACE)
     public List<String> loadDirXmlReutersToDB() {
         String basePath = "/reuters-machine-learning/reuters21578/";
         String prefix = "reut2-";
@@ -63,7 +65,6 @@ public class XmlParserController {
     @ResponseBody
     @ApiOperation(value = "Remove all reuters from database (be careful).")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Loggable(Loggable.TRACE)
     public String deleteAllReutersFromDB() {
         try {
             xmlParserService.deleteAllReutersFromDB();
@@ -78,9 +79,17 @@ public class XmlParserController {
     @ResponseBody
     @ApiOperation(value = "Clear database from useless reuters.")
     @ResponseStatus(HttpStatus.OK)
-    @Loggable(Loggable.TRACE)
     public String removeUselessReuters() {
         return xmlParserService.prepareDatabase();
+    }
+
+    @RequestMapping("/getAmountOfAllReuters")
+    @ApiOperation(value = "Get amount of all reuters in DB.")
+    @ResponseStatus(HttpStatus.OK)
+    public String getAmountOfAllReuters(Model model){
+        model.addAttribute("amount", String.valueOf(xmlParserService.getAmountOfReuters()));
+        System.out.println("test");
+        return "index";
     }
 
 }

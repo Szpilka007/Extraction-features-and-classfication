@@ -13,9 +13,12 @@ import pl.lodz.p.edu.csr.textclassification.service.ExtractionService;
 import java.util.List;
 import java.util.UUID;
 
+//import org.springframework.security.access.prepost.PreAuthorize;
+
 @Controller
 @Api(value = "Extraction Controller")
 @RequestMapping("/extractor")
+//@PreAuthorize("hasRole('ADMIN')")
 public class ExtractionController {
 
     @Autowired
@@ -37,7 +40,7 @@ public class ExtractionController {
     @Loggable(Loggable.TRACE)
     public String getAndSaveOneReutersFeatures(@PathVariable String uuid) {
         StringBuilder result = new StringBuilder();
-        result.append(extractionService.extractFeature(UUID.fromString(uuid))+"\n");
+        result.append(extractionService.extractFeature(UUID.fromString(uuid)) + "\n");
         List<FeatureEntity> features = extractionService.getReutersRepository()
                 .findReutersEntityByUuid(UUID.fromString(uuid))
                 .getFeatures();
@@ -71,7 +74,7 @@ public class ExtractionController {
     @ResponseBody
     @ApiOperation(value = "Check stats for calculated features.")
     @ResponseStatus(HttpStatus.OK)
-    public String checkStatusForFeatures(){
+    public String checkStatusForFeatures() {
         return extractionService.checkStatusForFeatures();
     }
 
@@ -79,7 +82,7 @@ public class ExtractionController {
     @ResponseBody
     @ApiOperation(value = "Normalize all features data.")
     @ResponseStatus(HttpStatus.OK)
-    public String normalizeAllFeatures(){
+    public String normalizeAllFeatures() {
         return extractionService.normalizeAllFeatures();
     }
 

@@ -7,18 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import pl.lodz.p.edu.csr.textclassification.model.Feature;
 import pl.lodz.p.edu.csr.textclassification.model.enums.DataBreakdown;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.service.ClassificationService;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.MetricType;
 
+import javax.xml.crypto.Data;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+//import org.springframework.security.access.prepost.PreAuthorize;
+
 @Controller
 @Api(value = "Classification Controller")
 @RequestMapping("/classification")
+//@PreAuthorize("permitAll()")
 public class ClassificationController {
 
     @Autowired
@@ -38,7 +44,7 @@ public class ClassificationController {
             return classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, processName);
         } catch (Exception e) {
             e.printStackTrace();
-            return "CLASSIFIED PROCESS FAILED!\n\n"+e.getMessage();
+            return "CLASSIFIED PROCESS FAILED!\n\n" + e.getMessage();
         }
     }
 
@@ -50,7 +56,7 @@ public class ClassificationController {
     public String classifyAllExample() {
         System.out.println("TEST");
         List<FeatureType> usedFeatures = Arrays.asList(FeatureType.SCKDAW, FeatureType.SUKDAW);
-        System.out.println(8.0 +" "+DataBreakdown.L50T50.toString()+" "+usedFeatures.toString()+" "+MetricType.EUCLIDEAN.toString()+" test1");
+        System.out.println(8.0 + " " + DataBreakdown.L50T50.toString() + " " + usedFeatures.toString() + " " + MetricType.EUCLIDEAN.toString() + " test1");
         try {
             return classificationService.classifyAllReuters(8.0, DataBreakdown.L20T80, usedFeatures, MetricType.EUCLIDEAN, "test1");
         } catch (Exception e) {
@@ -92,5 +98,122 @@ public class ClassificationController {
     public String deleteClassificationDataByName(@PathVariable String name) {
         return classificationService.deleteClassificationDataByName(name);
     }
+
+    @GetMapping(value = "/classificationForSpecificK/{k}")
+    @ApiOperation(value = "Classifications for specific k.")
+    @ResponseStatus(HttpStatus.OK)
+    public void classificationForSpecificK(@PathVariable Double k) throws Exception {
+//        List<Double> listOfK = Arrays.asList(0.001, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0);
+        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
+
+        MetricType metric = MetricType.EUCLIDEAN;
+        DataBreakdown dataBreakdown = DataBreakdown.L60T40;
+
+//        for(Double k : listOfK){
+            String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+            sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+            sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+            sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+            sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+            sb.append("K = ").append(k).append("\n");
+            sb.append("=========================================================================").append("\n");
+            sb.append(result).append("\n\n");
+            System.out.println(sb.toString());
+//        }
+    }
+
+    @GetMapping(value = "/classificationForDifferentK")
+    @ApiOperation(value = "Classifications for different k.")
+    @ResponseStatus(HttpStatus.OK)
+    public void classificationForDifferentK() throws Exception {
+        List<Double> listOfK = Arrays.asList(0.001, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0);
+        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
+
+        MetricType metric = MetricType.EUCLIDEAN;
+        DataBreakdown dataBreakdown = DataBreakdown.L60T40;
+
+        for(Double k : listOfK){
+                    String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+                    sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+                    sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+                    sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+                    sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+                    sb.append("K = ").append(k).append("\n");
+                    sb.append("=========================================================================").append("\n");
+                    sb.append(result).append("\n\n");
+                    System.out.println(sb.toString());
+        }
+    }
+
+    @GetMapping(value = "/classificationForDifferentDataBreakdown")
+    @ApiOperation(value = "Classifications for different DataBreakdown.")
+    @ResponseStatus(HttpStatus.OK)
+    public void classificationForDifferentDataBreakdown() throws Exception {
+        List<Double> listOfK = Arrays.asList(0.001, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0);
+        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
+
+//        List<FeatureType> withoutAVG = Arrays.asList(FeatureType.values());
+//        System.out.println(withoutAVG.toString());
+//        withoutAVG.removeAll(Arrays.asList(FeatureType.AOSCKDS,FeatureType.AOSCKDP,FeatureType.AOSUKDP, FeatureType.AOSUKDS));
+//
+//        List<FeatureType> withoutSpecial = Arrays.asList(FeatureType.values());
+//        withoutSpecial.removeAll(Arrays.asList(FeatureType.AKOP, FeatureType.AWBUK, FeatureType.AWWTNOSDAK, FeatureType.AL));
+//
+//        List<FeatureType> withoutProportion = Arrays.asList(FeatureType.values());
+//        withoutProportion.removeAll(Arrays.asList(FeatureType.PUKIPOA, FeatureType.PUACK));
+//
+//        List<FeatureType> withoutSum = Arrays.asList(FeatureType.values());
+//        withoutSum.removeAll(Arrays.asList(FeatureType.SCKDAW, FeatureType.SUKDAW));
+//
+//        List<List<FeatureType>> diffFeatures = Arrays.asList(withoutAVG, withoutProportion, withoutSpecial, withoutSum);
+
+        MetricType metric = MetricType.EUCLIDEAN;
+        DataBreakdown dataBreakdown = DataBreakdown.L60T40;
+
+        for(Double k : listOfK){
+            String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+            sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+            sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+            sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+            sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+            sb.append("K = ").append(k).append("\n");
+            sb.append("=========================================================================").append("\n");
+            sb.append(result).append("\n\n");
+            System.out.println(sb.toString());
+        }
+    }
+
+//    @GetMapping(value = "/classificationForDifferentDataBreakDown")
+//    @ResponseBody
+//    public void classificationForDifferentDataBreakDown(DataBreakdown dataBreakdown, String processName) throws Exception {
+//        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
+//        Double k = 0.02;
+//        MetricType metricType = MetricType.EUCLIDEAN;
+//        String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metricType, processName);
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+//        sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+//        sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+//        sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+//        sb.append("METRIC TYPE = ").append(metricType.toString()).append("\n");
+//        sb.append("K = ").append(k.toString()).append("\n");
+//        sb.append("PROCESS NAME = ").append(processName).append("\n");
+//        sb.append(result).append("\n\n");
+//        System.out.println(sb.toString());
+//    }
+//
+    @GetMapping(value = "/thebestK")
+    @ResponseBody
+    public String theBestK(){
+        return classificationService.theBestK();
+    }
+
+
 
 }
