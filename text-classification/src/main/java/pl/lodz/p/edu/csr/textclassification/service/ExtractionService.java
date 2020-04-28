@@ -111,6 +111,7 @@ public class ExtractionService {
         for(FeatureType featureType : featureTypes){
             Double max = getMaxValueForFeatures(featureType);
             Double min = getMinValueForFeatures(featureType);
+            System.out.println(featureType.toString()+" = ["+min+","+max+"]");
             features.stream()
                     .filter(i -> i.getFeatureType().equals(featureType))
                     .forEach(i -> i.setValue((i.getValue()-min)/(max-min)));

@@ -11,6 +11,7 @@ import pl.lodz.p.edu.csr.textclassification.repository.ReutersRepository;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ClassifiedEntity;
 import pl.lodz.p.edu.csr.textclassification.repository.entities.ReutersEntity;
 import pl.lodz.p.edu.csr.textclassification.service.classifier.KnnAlgorithm;
+import pl.lodz.p.edu.csr.textclassification.service.classifier.KnnStatistics;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.Metric;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.MetricType;
 
@@ -30,6 +31,9 @@ public class ClassificationService {
 
     @Autowired
     ClassifiedRepository classifiedRepository;
+
+    @Autowired
+    KnnStatistics knnStatistics;
 
     @Autowired
     public ClassificationService(List<Metric> metricsList) {
@@ -56,7 +60,7 @@ public class ClassificationService {
     public String classifyAllReuters(Double k, DataBreakdown dataBreakdown,
                                      List<FeatureType> usedFeatures, MetricType metric, String customProcessName) throws Exception {
         String processName = customProcessName;
-        if(customProcessName.equals("")){
+        if (customProcessName.equals("")) {
             processName = "K[" + k + "]" +
                     "_DataBreakdown[" + DataBreakdown.valueOf(dataBreakdown.toString()) + "]" +
                     "_Metric[" + MetricType.valueOf(metric.toString()) + "]" +
@@ -90,12 +94,12 @@ public class ClassificationService {
             reutersEntity.getClassified().add(classified);
             classifiedRepository.save(classified);
             reutersRepository.save(reutersEntity);
-//            if (reutersToClassify.indexOf(uuid) % 50 == 0) {
-//                System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
-//                        (double) reutersToClassify.indexOf(uuid) / (double) reutersToClassify.size(),
-//                        start.until(LocalDateTime.now(), ChronoUnit.SECONDS)
-//                ));
-//            }
+            if (reutersToClassify.indexOf(uuid) % 50 == 0) {
+                System.out.println(String.format("PROGRESS %6.2f %% | DURATION %05d sec",
+                        (double) reutersToClassify.indexOf(uuid) / (double) reutersToClassify.size() * 100,
+                        start.until(LocalDateTime.now(), ChronoUnit.SECONDS)
+                ));
+            }
         }
         long duration = start.until(LocalDateTime.now(), ChronoUnit.SECONDS);
         return "Classified [" + reutersToClassify.size() + "] reuters successful in [" + duration + "].";
@@ -132,17 +136,17 @@ public class ClassificationService {
     }
 
     @Transactional(readOnly = true)
-    public String theBestK(){
+    public String theBestK() {
         List<String> listOfTests = classifiedRepository.findAll().stream()
                 .map(ClassifiedEntity::getName)
                 .distinct()
                 .collect(Collectors.toList());
         StringBuilder sb = new StringBuilder();
         List<ReutersEntity> allReuters = reutersRepository.findAll();
-        for(String name : listOfTests){
+        for (String name : listOfTests) {
             Map<String, String> orgClass = new HashMap<>();
-            for(ReutersEntity reuters : allReuters){
-                if(reuters.getClassified().isEmpty()) continue;
+            for (ReutersEntity reuters : allReuters) {
+                if (reuters.getClassified().isEmpty()) continue;
                 Optional<String> classed = reuters.getClassified().stream()
                         .filter(i -> i.getName().equals(name))
                         .map(ClassifiedEntity::getLabel)
@@ -151,14 +155,58 @@ public class ClassificationService {
 
             }
 //            sb.append(orgClass.values()).append("\n");
-            long correct = orgClass.entrySet().stream().filter(i-> i.getKey().equals(i.getValue())).count();
+            long correct = orgClass.entrySet().stream().filter(i -> i.getKey().equals(i.getValue())).count();
             double percent = (double) correct / (double) orgClass.entrySet().size() * 100.0;
 //            if(percent > 33.0){
-                sb.append(name).append(" | Effectiveness = ").append(percent).append("\n");
+            sb.append(name).append(" | Effectiveness = ").append(percent).append("\n");
 //            }
         }
 //        sb.append(classifiedRepository.findAll().stream().map(i -> i.getLabel()).collect(Collectors.toList()).toString());
         return sb.toString();
+    }
+
+    public String generateReportForAllClassifications() {
+        StringBuilder sb = new StringBuilder();
+        List<String> listOfTests = classifiedRepository.findAll().stream()
+                .map(ClassifiedEntity::getName)
+                .distinct()
+                .collect(Collectors.toList());
+        for (String classificationName : listOfTests) {
+            sb.append("\n\n============================================================\n");
+            sb.append(getDataAboutTest(classificationName));
+            int[][] matrix = knnStatistics.generateMatrixConfusion(classificationName);
+            sb.append(knnStatistics.printMatrixConfusion(matrix)).append("\n\n");
+            sb.append("Accuracy = \t").append(knnStatistics.calculateAccuracy(matrix)).append("\n");
+            sb.append("Precision = \t").append(knnStatistics.calculatePrecision(matrix)).append("\n");
+            sb.append("Recall = \t").append(knnStatistics.calculateRecall(matrix)).append("\n");
+            sb.append("============================================================\n\n");
+        }
+        return sb.toString();
+    }
+
+    public String getDataAboutTest(String testName) {
+        Optional<ClassifiedEntity> classifiedEntity = classifiedRepository.findAll().stream()
+                .filter(i -> i.getName().equals(testName))
+                .findAny();
+        if (classifiedEntity.isPresent()) {
+            long classificationTime = classifiedRepository.findAll().stream()
+                    .filter(i -> i.getName().equals(testName))
+                    .mapToLong(ClassifiedEntity::getDuration)
+                    .reduce(Long::sum).orElse(0);
+            String usedFeatures = classifiedEntity.get().getFeaturesUsed();
+            String k = classifiedEntity.get().getK().toString();
+            String dataBreakdown = classifiedEntity.get().getDataBreakdown().toString();
+            String metricType = classifiedEntity.get().getMetricType().toString();
+            return "CLASSIFICATION: " + testName + "\n" +
+                    "DURATION = " + classificationTime + " seconds \n" +
+                    "USED FEATURES = " + usedFeatures + "\n" +
+                    "DATA BREAKDOWN = " + dataBreakdown + "\n" +
+                    "METRIC TYPE = " + metricType + "\n" +
+                    "K = " + k + "\n";
+        } else {
+            return "Unknown data about " + testName;
+        }
+
     }
 
 }

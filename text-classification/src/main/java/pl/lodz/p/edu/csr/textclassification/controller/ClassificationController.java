@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import pl.lodz.p.edu.csr.textclassification.model.Feature;
 import pl.lodz.p.edu.csr.textclassification.model.enums.DataBreakdown;
 import pl.lodz.p.edu.csr.textclassification.model.enums.FeatureType;
 import pl.lodz.p.edu.csr.textclassification.service.ClassificationService;
+import pl.lodz.p.edu.csr.textclassification.service.classifier.KnnStatistics;
 import pl.lodz.p.edu.csr.textclassification.service.metrics.MetricType;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +28,9 @@ public class ClassificationController {
 
     @Autowired
     ClassificationService classificationService;
+
+    @Autowired
+    KnnStatistics knnStatistics;
 
     @GetMapping(value = "/classifyAll")
     @ResponseBody
@@ -103,25 +105,20 @@ public class ClassificationController {
     @ApiOperation(value = "Classifications for specific k.")
     @ResponseStatus(HttpStatus.OK)
     public void classificationForSpecificK(@PathVariable Double k) throws Exception {
-//        List<Double> listOfK = Arrays.asList(0.001, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0);
         List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
-
         MetricType metric = MetricType.EUCLIDEAN;
         DataBreakdown dataBreakdown = DataBreakdown.L60T40;
-
-//        for(Double k : listOfK){
-            String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
-            sb.append("CLASSIFICATION WITH PARAMETERS:\n");
-            sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
-            sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
-            sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
-            sb.append("K = ").append(k).append("\n");
-            sb.append("=========================================================================").append("\n");
-            sb.append(result).append("\n\n");
-            System.out.println(sb.toString());
-//        }
+        String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "ForK_" + k);
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+        sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+        sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+        sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+        sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+        sb.append("K = ").append(k).append("\n");
+        sb.append("=========================================================================").append("\n");
+        sb.append(result).append("\n\n");
+        System.out.println(sb.toString());
     }
 
     @GetMapping(value = "/classificationForDifferentK")
@@ -134,18 +131,18 @@ public class ClassificationController {
         MetricType metric = MetricType.EUCLIDEAN;
         DataBreakdown dataBreakdown = DataBreakdown.L60T40;
 
-        for(Double k : listOfK){
-                    String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
-                    sb.append("CLASSIFICATION WITH PARAMETERS:\n");
-                    sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
-                    sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
-                    sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
-                    sb.append("K = ").append(k).append("\n");
-                    sb.append("=========================================================================").append("\n");
-                    sb.append(result).append("\n\n");
-                    System.out.println(sb.toString());
+        for (Double k : listOfK) {
+            String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+            sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+            sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+            sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+            sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+            sb.append("K = ").append(k).append("\n");
+            sb.append("=========================================================================").append("\n");
+            sb.append(result).append("\n\n");
+            System.out.println(sb.toString());
         }
     }
 
@@ -174,7 +171,7 @@ public class ClassificationController {
         MetricType metric = MetricType.EUCLIDEAN;
         DataBreakdown dataBreakdown = DataBreakdown.L60T40;
 
-        for(Double k : listOfK){
+        for (Double k : listOfK) {
             String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "");
             StringBuilder sb = new StringBuilder();
             sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
@@ -189,31 +186,96 @@ public class ClassificationController {
         }
     }
 
-//    @GetMapping(value = "/classificationForDifferentDataBreakDown")
-//    @ResponseBody
-//    public void classificationForDifferentDataBreakDown(DataBreakdown dataBreakdown, String processName) throws Exception {
-//        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
-//        Double k = 0.02;
-//        MetricType metricType = MetricType.EUCLIDEAN;
-//        String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metricType, processName);
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
-//        sb.append("CLASSIFICATION WITH PARAMETERS:\n");
-//        sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
-//        sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
-//        sb.append("METRIC TYPE = ").append(metricType.toString()).append("\n");
-//        sb.append("K = ").append(k.toString()).append("\n");
-//        sb.append("PROCESS NAME = ").append(processName).append("\n");
-//        sb.append(result).append("\n\n");
-//        System.out.println(sb.toString());
-//    }
-//
-    @GetMapping(value = "/thebestK")
-    @ResponseBody
-    public String theBestK(){
-        return classificationService.theBestK();
+    @GetMapping(value = "/classificationForSpecificDataBreakdown/{dataBreakdown}")
+    @ApiOperation(value = "Classifications for specific DataBreakdown.")
+    @ResponseStatus(HttpStatus.OK)
+    public void classificationForSpecificDataBreakdown(@PathVariable DataBreakdown dataBreakdown) throws Exception {
+        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
+        MetricType metric = MetricType.EUCLIDEAN;
+        Double k = 0.5;
+        String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "ForDB_" + dataBreakdown.toString());
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+        sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+        sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+        sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+        sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+        sb.append("K = ").append(k).append("\n");
+        sb.append("=========================================================================").append("\n");
+        sb.append(result).append("\n\n");
+        System.out.println(sb.toString());
     }
 
+    @GetMapping(value = "/classificationForSpecificMetric/{metric}/{processName}")
+    @ApiOperation(value = "Classifications for specific Metric.")
+    @ResponseStatus(HttpStatus.OK)
+    public void classificationForSpecificMetric(@PathVariable MetricType metric, @PathVariable String processName) throws Exception {
+        List<FeatureType> usedFeatures = Arrays.asList(FeatureType.values());
+//        MetricType metric = MetricType.EUCLIDEAN;
+        DataBreakdown dataBreakdown = DataBreakdown.L60T40;
+        Double k = 1.0;
+        String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, processName);
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+        sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+        sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+        sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+        sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+        sb.append("K = ").append(k).append("\n");
+        sb.append("=========================================================================").append("\n");
+        sb.append(result).append("\n\n");
+        System.out.println(sb.toString());
+    }
+
+    @GetMapping(value = "/classificationForSpecificFeatures")
+    @ApiOperation(value = "Classifications for specific Features.")
+    @ResponseStatus(HttpStatus.OK)
+    public void classificationForSpecificFeatures() throws Exception {
+        List<FeatureType> usedFeatures = Arrays.asList(
+                FeatureType.AKOP,
+                FeatureType.AWBUK,
+                FeatureType.AWWTNOSDAK,
+                FeatureType.AL,
+                FeatureType.AOSCKDP,
+                FeatureType.AOSCKDS,
+                FeatureType.AOSUKDP,
+                FeatureType.AOSUKDS,
+                FeatureType.PUACK,
+                FeatureType.PUKIPOA,
+                FeatureType.SCKDAW,
+                FeatureType.SUKDAW
+        );
+        MetricType metric = MetricType.EUCLIDEAN;
+        DataBreakdown dataBreakdown = DataBreakdown.L60T40;
+        Double k = 0.5;
+        String result = classificationService.classifyAllReuters(k, dataBreakdown, usedFeatures, metric, "ForFeatures_" + FeatureType.packFeatures(usedFeatures));
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n=====================[").append(LocalDateTime.now().toString()).append("]=====================\n");
+        sb.append("CLASSIFICATION WITH PARAMETERS:\n");
+        sb.append("USED FEATURES = ").append(usedFeatures.toString()).append("\n");
+        sb.append("DATA BREAKDOWN = ").append(dataBreakdown.toString()).append("\n");
+        sb.append("METRIC TYPE = ").append(metric.toString()).append("\n");
+        sb.append("K = ").append(k).append("\n");
+        sb.append("=========================================================================").append("\n");
+        sb.append(result).append("\n\n");
+        System.out.println(sb.toString());
+    }
+
+
+
+    @GetMapping(value = "/report")
+    @ApiOperation(value = "Report for all classifications.")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String reportForAllClassification() {
+        return classificationService.generateReportForAllClassifications();
+    }
+
+    @GetMapping(value = "/matrix/{processName}")
+    @ResponseBody
+    public String matrixClassification(@PathVariable String processName) {
+        return knnStatistics.printMatrixConfusion(knnStatistics.generateMatrixConfusion(processName));
+    }
 
 
 }

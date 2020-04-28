@@ -161,6 +161,23 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>
+                    <docletArtifact>
+                        <groupId>com.github.gboersma</groupId>
+                        <artifactId>uml-java-doclet</artifactId>
+                        <version>1.1</version>
+                    </docletArtifact>
+                    <useStandardDocletOptions>true</useStandardDocletOptions>
+                    <additionalOptions>
+                        <!-- Specify each diagram option here as an additionOption tag. -->
+                    </additionalOptions>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

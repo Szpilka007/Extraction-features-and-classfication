@@ -16,13 +16,15 @@ class AverageLevenshteinTest {
 
     /*
         unique: dog, fish
-        notUnique: alice, big, cat
+        common: alice, big, cat
 
         dog -> alice    (5)         fish -> alice   (4)
         dog -> big      (2)         fish -> big     (3)
         dog -> cat      (3)         fish -> cat     (4)
 
         dog ->      avg(10/3)       fish ->     avg(11/3)
+
+        result -> avg(21/3 / 2)
      */
 
     AverageLevenshteinTest() throws IOException {
