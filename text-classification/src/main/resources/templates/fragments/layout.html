@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headerfiles.html :: headerfiles">
+    <title>CSR</title>
+</head>
+<body id="page-top">
+<div id="wrapper">
+    <div th:replace="fragments/sidebar.html :: sidebar"></div>
+    <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content">
+            <header th:replace="fragments/header.html :: header"></header>
+            <div class="container-fluid" th:fragment="content">
+                PAGE CONTENT SHOULD GO HERE!
+            </div>
+        </div>
+        <footer th:replace="fragments/footer.html :: footer"></footer>
+    </div>
+</div>
+</body>
+</html>

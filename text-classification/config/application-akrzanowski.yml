@@ -1,0 +1,30 @@
+# ===============================
+# SPRING (DATABASE / H2 / JPA / HIBERNATE)
+# ===============================
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    password: password
+    url: jdbc:h2:file:./src/main/resources/h2/ksr-one
+    username: sa
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+# ===============================
+# MANAGEMENT (ekspozycja endpointów - all * only for dev)
+# Website: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html
+# Paragraph 2.2 => production-ready-endpoints-exposing-endpoints
+# ===============================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
